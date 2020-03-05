@@ -47,6 +47,7 @@ extension DeterministicFiniteAutomaton.Runtime {
                 transit(character: c)
                 if isAcceptState && !tail { return true }
             }
+            if head && input == text { return isAcceptState }
             if isAcceptState && !head { return true }
             currentState = DFA.start
             text = String(text.dropFirst())
