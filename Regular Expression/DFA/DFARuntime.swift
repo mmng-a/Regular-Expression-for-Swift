@@ -37,8 +37,21 @@ extension DeterministicFiniteAutomaton.Runtime {
     }
     
     mutating func accept(input: String) -> Bool {
-        for c in input {
-            transit(character: c)
+        var text = input
+        
+        let head = [.all, .head].contains(DFA.condition)
+        let tail = [.all, .tail].contains(DFA.condition)
+        print(DFA.condition)
+        
+        while !text.isEmpty {
+            print(text)
+            for c in text {
+                transit(character: c)
+                if isAcceptState && !tail { return true }
+            }
+            if isAcceptState && !head { return true }
+            currentState = DFA.start
+            text = String(text.dropFirst())
         }
         return isAcceptState
     }

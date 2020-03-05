@@ -15,6 +15,11 @@ struct DeterministicFiniteAutomaton {
          start: Set<Int>, accepts: NonDisjointSet<Int>) {
         (self.transition, self.start, self.accepts) = (transition, start, accepts)
     }
+    
+    var condition: Condition = .part
+    enum Condition: String {
+        case part, head, tail, all
+    }
 }
 
 extension DeterministicFiniteAutomaton {

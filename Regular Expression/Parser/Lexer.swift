@@ -29,7 +29,7 @@ struct Lexer {
                 return Token.lSquareBracket
             case "s":
                 // not supporting `\p{UNICODE PROPERTY NAME}`
-                text.insert(contentsOf: "\u{09}\u{0A}\u{0C}\u{0D}]", at: text.startIndex)
+                text.insert(contentsOf: "\t\n\r ]", at: text.startIndex)
                 return Token.lSquareBracket
             case "w":
                 text.insert(contentsOf: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\\d]", at: text.startIndex)

@@ -59,7 +59,22 @@ extension Parser {
                 // ココうまい方法ありそう
                 var nodes = [Node]()
                 while self.look.kind != .rSquareBracket {
-                    nodes.append(try star())
+                    let node = try factor()
+                    // [a-z]などの場合
+                    if self.look.kind == .hyphen {
+                        try self.match(tag: .hyphen)
+                        guard let startCharacter = node as? Character,
+                            self.look.kind != .rSquareBracket,
+                            let endCharacter = try factor() as? Character else {
+                                nodes.append(node)
+                                nodes.append(Character("-"))
+                                continue
+                        }
+                        let characters = [Character](from: startCharacter, to: endCharacter)
+                        nodes.append(contentsOf: characters)
+                    } else {
+                        nodes.append(node)
+                    }
                 }
                 try self.match(tag: .rSquareBracket)
                 

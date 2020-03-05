@@ -9,6 +9,9 @@
 
 extension Array where Element == Character {
     
-    
-    
+    init(from character1: Character, to character2: Character) {
+        let a = character1.asciiCode
+        let b = character2.asciiCode
+        self = (a...b).map { Character(asciiCode: $0) }.compactMap { $0 }
+    }
 }

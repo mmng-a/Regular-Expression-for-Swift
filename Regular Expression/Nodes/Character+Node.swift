@@ -1,5 +1,5 @@
 //
-//  Character++.swift
+//  Character+Node.swift
 //  Regular Expression
 //
 //  Created by Masashi Aso on 2020/03/04.

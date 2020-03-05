@@ -10,7 +10,7 @@ import ArgumentParser
 
 struct Regex: ParsableCommand {
     
-    @Argument(help: "You can use `(`, `)`, `*`, `+`, `|`, `?`.\nAnd you can use '\\' for special characters.\nNow, `[`, `]` are available, but `-` can't used.")
+    @Argument(help: "You can use many syntax of regular expression without `.`.")
     var pattern: String
     
     @Argument(help: "If you enter the text, you can just see the result.\nOr you can try regex many times.")
@@ -21,12 +21,32 @@ struct Regex: ParsableCommand {
 extension Regex {
     
     func run() throws {
-        let lexer = Lexer(text: self.pattern)
+        // 前方一致、完全一致、後方一致を振り分ける
+        var pattern = self.pattern
+        var condition: DeterministicFiniteAutomaton.Condition = .part
+        if let first = pattern.first, let last = pattern.last {
+            switch (first, last) {
+            case ("^", "$"):
+                pattern = String(pattern.dropFirst().dropLast())
+                condition = .all
+            case ("^",   _):
+                pattern = String(pattern.dropFirst())
+                condition = .head
+            case (_,   "$"):
+                pattern = String(pattern.dropLast())
+                condition = .tail
+            default:
+                condition = .part
+            }
+        }
+        
+        let lexer = Lexer(text: pattern)
         var parser = Parser(lexer: lexer)
         guard let NFA = try? parser.expression() else {
             throw Parser.ParseError.syntax
         }
-        let DFA = DeterministicFiniteAutomaton(from: NFA)
+        var DFA = DeterministicFiniteAutomaton(from: NFA)
+        DFA.condition = condition
         
         func printMatch(text: String) {
             var runtime = DFA.getRuntime()
