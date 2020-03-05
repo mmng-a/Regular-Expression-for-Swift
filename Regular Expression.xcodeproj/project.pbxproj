@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA280FA8241174FD00EB43CA /* Array++.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA280FA7241174FD00EB43CA /* Array++.swift */; };
 		BAA7170C24111B700043DC98 /* Regular_Expression_Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA7170B24111B700043DC98 /* Regular_Expression_Test.swift */; };
 		BAA71712241147A30043DC98 /* Collection++.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA71711241147A30043DC98 /* Collection++.swift */; };
 		BAC6DA04240FA6D400F410BC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC6DA03240FA6D400F410BC /* main.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BA280FA7241174FD00EB43CA /* Array++.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array++.swift"; sourceTree = "<group>"; };
 		BAA7170924111B700043DC98 /* Regular Expression Test.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Regular Expression Test.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAA7170B24111B700043DC98 /* Regular_Expression_Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Regular_Expression_Test.swift; sourceTree = "<group>"; };
 		BAA7170D24111B700043DC98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 			children = (
 				BAC6DA0E240FA75E00F410BC /* NonDisjointSet.swift */,
 				BAA71711241147A30043DC98 /* Collection++.swift */,
+				BA280FA7241174FD00EB43CA /* Array++.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				BAC6DA1B240FA97400F410BC /* Parser.swift in Sources */,
 				BAC6DA24240FAA4200F410BC /* Star.swift in Sources */,
 				BAC6DA21240FAA2000F410BC /* Optional++.swift in Sources */,
+				BA280FA8241174FD00EB43CA /* Array++.swift in Sources */,
 				BAC6DA1D240FA9AB00F410BC /* Node.swift in Sources */,
 				BAC6DA26240FAA4D00F410BC /* Concat.swift in Sources */,
 				BAC6DA0B240FA71C00F410BC /* NondeterministicFiniteAutonaton.swift in Sources */,
