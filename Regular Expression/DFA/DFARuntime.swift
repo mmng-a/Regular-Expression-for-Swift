@@ -41,10 +41,8 @@ extension DeterministicFiniteAutomaton.Runtime {
         
         let head = [.all, .head].contains(DFA.condition)
         let tail = [.all, .tail].contains(DFA.condition)
-        print(DFA.condition)
         
         while !text.isEmpty {
-            print(text)
             for c in text {
                 transit(character: c)
                 if isAcceptState && !tail { return true }
