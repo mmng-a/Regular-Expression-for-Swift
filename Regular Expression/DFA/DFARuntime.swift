@@ -33,7 +33,7 @@ extension DeterministicFiniteAutomaton.Runtime {
     
     var isAcceptState: Bool {
         !DFA.accepts.base.intersection(currentState).isEmpty
-        //DFA.accepts.contains(currentState)
+//        DFA.accepts.contains(currentState)
     }
     
     mutating func accept(input: String) -> Bool {

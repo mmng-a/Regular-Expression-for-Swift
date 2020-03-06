@@ -17,7 +17,7 @@ struct Parser {
     }
     
     mutating func match(tag: Token.Kind) throws {
-        //        print(look!)
+//        print(look!)
         if look.kind != tag {
             switch tag {
             case .character, .union, .star, .plus, .question,
@@ -75,7 +75,7 @@ extension Parser {
             try self.match(tag: .lSquareBracket)
             // ココうまい方法ありそう
             var nodes = [Node]()
-            while self.look.kind != .rSquareBracket {
+            while self.look.kind != .rSquareBracket && self.look.kind != .EOF {
                 let node = try factor()
                 guard self.look.kind == .hyphen else {
                     nodes.append(node)
@@ -84,7 +84,7 @@ extension Parser {
                 // [a-z]などの場合
                 try self.match(tag: .hyphen)
                 guard let startCharacter = node as? Character,
-                    self.look.kind != .rSquareBracket,
+                    self.look.kind != .rSquareBracket && self.look.kind != .EOF,
                     let endCharacter = try factor() as? Character else {
                         // 普通に`-`をCHARACTERとして扱っている場合
                         nodes.append(node)
@@ -100,10 +100,7 @@ extension Parser {
             node = nodes.makeNode()
         } else {
             // CHARACTER
-            guard case .character(let c) = self.look else {
-                // `[a-` はここに分類されてしまうが仕方ない
-                throw ParseError.syntax
-            }
+            guard case .character(let c) = self.look else { throw ParseError.syntax }
             try self.match(tag: .character)
             node = c
         }
@@ -122,7 +119,7 @@ extension Parser {
         }
         
         if strings.count == 1 {         // {3}
-            guard let count = Int(strings[0]) else { throw ParseError.number}
+            guard let count = Int(strings[0]) else { throw ParseError.number }
             guard count >= 0 else { throw ParseError.other("{num} must be greater than 0") }
             // return Concat(node, Concat(node, Concat(node, ...)))
             return makeConcat(count: count)
@@ -206,7 +203,7 @@ extension Parser {
         
         var context = Context()
         let fragment = node.assemble(&context)
-        //            print(fragment)
+//        print(fragment)
         return fragment.build()
     }
 }
