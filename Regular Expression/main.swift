@@ -42,9 +42,7 @@ extension Regex {
         
         let lexer = Lexer(text: pattern)
         var parser = Parser(lexer: lexer)
-        guard let NFA = try? parser.expression() else {
-            throw Parser.ParseError.syntax
-        }
+        let NFA = try parser.expression()
         var DFA = DeterministicFiniteAutomaton(from: NFA)
         DFA.condition = condition
         

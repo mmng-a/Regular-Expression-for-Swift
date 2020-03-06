@@ -22,7 +22,6 @@ extension Collection where Element == Node {
             return node
         }
     }
-    
 }
 
 extension Collection where Element: Node {
