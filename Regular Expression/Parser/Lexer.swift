@@ -25,14 +25,14 @@ struct Lexer {
             let first = text.removeFirst()
             switch first {
             case "d":
-                text.insert(contentsOf: "1234567890]", at: text.startIndex)
+                text.insert(contentsOf: "0-9]", at: text.startIndex)
                 return Token.lSquareBracket
             case "s":
                 // not supporting `\p{UNICODE PROPERTY NAME}`
                 text.insert(contentsOf: "\t\n\r ]", at: text.startIndex)
                 return Token.lSquareBracket
             case "w":
-                text.insert(contentsOf: #"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\d]"#, at: text.startIndex)
+                text.insert(contentsOf: #"a-zA-Z0-9_]"#, at: text.startIndex)
                 return Token.lSquareBracket
             default:
                 return Token.character(first)

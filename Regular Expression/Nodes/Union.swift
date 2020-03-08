@@ -33,11 +33,3 @@ struct Union: Node {
     
     func toString() -> String { "\(node1.toString())|\(node2.toString())" }
 }
-
-
-extension Union {
-    
-    static let numbers = "1234567890".makeNode() as! Union
-    
-    static let alphabets = "abcdefghijklmnopqrstuvwxyz".makeNode() as! Union
-}

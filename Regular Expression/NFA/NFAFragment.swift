@@ -21,7 +21,9 @@ extension NondeterministicFiniteAutomaton {
             }
         }
         
-        mutating func connect(from state1: Int, to state2: Int, with character: Character?) {
+        mutating func connect(
+            from state1: Int, to state2: Int, with character: Character?
+        ) {
             let input = Input(state1, character)
             self.dic[input, default: []].insert(state2)
         }

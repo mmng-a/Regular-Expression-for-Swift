@@ -21,8 +21,8 @@ class Regular_Expression_Test: XCTestCase {
 
     func testExample() {
         let regex = Regex(
-            pattern: .init(transform: { _ in "[abc]?" }),
-            text:    .init(transform: { _ in nil })
+            pattern: .init { _ in "[abc]?" },
+            text:    .init { _ in nil }
         )
         XCTAssertTrue(regex.callAsFunction("a")!)
     }

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Masashi Aso. All rights reserved.
 //
 
+
 struct NonDisjointSet<Element> where Element: Hashable {
     
     let base: Set<Element>

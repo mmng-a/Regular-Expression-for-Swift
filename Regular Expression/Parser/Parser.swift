@@ -60,9 +60,10 @@ extension Parser {
 
 extension Parser {
     
-    // 規則F: `a`, `(ab|c*)`
-    // 括弧で囲まれたsubExpressionかCHARACTER
-    // factor -> (`(` subExpression `)`) | CHARACTER
+    /// 規則F: `a`, `(ab|c*)`
+    ///
+    /// 括弧で囲まれたsubExpressionかCHARACTER
+    /// factor -> (`(` subExpression `)`) | CHARACTER
     mutating func factor() throws -> Node {
         let node: Node
         if self.look == .lParen {
@@ -83,20 +84,19 @@ extension Parser {
                 }
                 // [a-z]などの場合
                 try self.match(tag: .hyphen)
-                guard let startCharacter = node as? Character,
+                guard let start = node as? Character,
                     self.look.kind != .rSquareBracket && self.look.kind != .EOF,
-                    let endCharacter = try factor() as? Character else {
+                    let end = try factor() as? Character else {
                         // 普通に`-`をCHARACTERとして扱っている場合
                         nodes.append(node)
                         nodes.append(Character("-"))
                         continue
                 }
-                let characters = [Character](from: startCharacter, to: endCharacter)
+                let characters = [Character](from: start, to: end)
                 nodes.append(contentsOf: characters)
             }
             try self.match(tag: .rSquareBracket)
             
-            // Optional<Character>.none, Character, Union<Node, Union<Node, ...>>
             node = nodes.makeNode()
         } else {
             // CHARACTER
@@ -127,18 +127,20 @@ extension Parser {
             guard let start = Int(strings[0]), let end = Int(strings[1]) else {
                 throw ParseError.number
             }
-            guard 0 <= start else { throw ParseError.other("{num} must be greater than 0") }
-            guard start <= end else { throw ParseError.other("{a,b} must be a <= b") }
+            guard 0 <= start, start <= end else {
+                throw ParseError.other("{a,b} must be `0 <= a <= b`")
+            }
             // Many times, return Union(Concat(), Union(Concat(), ...))
             return (start...end).map(makeConcat(count:)).makeNode()
         } else {
-            throw ParseError.other("{} must be {num} or {start, end}")
+            throw ParseError.other("{} must be {num} or {start,end}")
         }
     }
     
-    // 規則E: `a*`, `a`, `(ab)*`
-    // factor、もしくはfactorに*をつけたもの
-    // star -> (factor `*`) | factor
+    /// 規則E: `a*`, `a`, `(ab)*`
+    ///
+    /// factor、もしくはfactorに*をつけたもの
+    /// star -> (factor `*`) | factor
     mutating func star() throws -> Node {
         var node = try self.factor()
         if self.look == .star {
@@ -156,24 +158,27 @@ extension Parser {
         return node
     }
     
-    // 規則D: `ab`, `a*bc`, `(ab)*cd`
-    // starを一個以上繋げたもの
-    // sequence -> subSequence | ``
+    /// 規則D: `ab`, `a*bc`, `(ab)*cd`
+    ///
+    /// starを一個以上繋げたもの
+    /// sequence -> subSequence | ``
     mutating func sequence() throws -> Node {
-        if [.lParen, .character, .lSquareBracket, .lCurlyBracket].contains(self.look.kind) {
+        if [.lParen, .character, .lSquareBracket, .lCurlyBracket]
+            .contains(self.look.kind) {
             return try self.subSequence()
         } else {
             return Optional<Character>.none
         }
     }
     
-    // 規則C: `(ab)*cd`, ``
-    // 文字列か空文字
-    // subSequence -> star (subSequence | star)
+    /// 規則C: `(ab)*cd`, ``
+    ///
+    /// 文字列か空文字
+    /// subSequence -> star (subSequence | star)
     mutating func subSequence() throws -> Node {
         let node = try self.star()
-        // 元は[.lParen, .character]。増やしていいか怪しいものを感じる。(sequenceも)
-        if [.lParen, .character, .lSquareBracket, .lCurlyBracket].contains(self.look.kind) {
+        if [.lParen, .character, .lSquareBracket, .lCurlyBracket]
+            .contains(self.look.kind) {
             let node2 = try self.subSequence()
             return Concat(node, node2)
         } else {
@@ -181,9 +186,10 @@ extension Parser {
         }
     }
     
-    // 規則B: `a|b`, `a*bc|(ab)*cd|`
-    // sequenceを`|`で一個以上繋げたもの
-    // subExpression -> (sequence `|` subExpression) | sequence
+    /// 規則B: `a|b`, `a*bc|(ab)*cd|`
+    ///
+    /// sequenceを`|`で一個以上繋げたもの
+    /// subExpression -> (sequence `|` subExpression) | sequence
     mutating func subExpression() throws -> Node {
         var node = try self.sequence()
         if self.look == .union {
@@ -194,9 +200,10 @@ extension Parser {
         return node
     }
     
-    // 規則A: `a*bc|(ab)*cd|` + EOF
-    // 末尾にEOFがある
-    // expression -> subExpression + `EOF`
+    /// 規則A: `a*bc|(ab)*cd|` + EOF
+    /// 
+    /// 末尾にEOFがある
+    /// expression -> subExpression + `EOF`
     mutating func expression() throws -> NondeterministicFiniteAutomaton {
         let node = try self.subExpression()
         try self.match(tag: .EOF)

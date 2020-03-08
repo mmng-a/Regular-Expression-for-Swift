@@ -7,8 +7,11 @@
 //
 
 protocol Node {
+    
     typealias NFAFragment = NondeterministicFiniteAutomaton.Fragment
+    
     func assemble(_ context: inout Context) -> NFAFragment
+    
     func toString() -> String
 }
 
