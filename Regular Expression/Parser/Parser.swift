@@ -98,6 +98,9 @@ extension Parser {
             try self.match(tag: .rSquareBracket)
             
             node = nodes.makeNode()
+        } else if self.look == .hyphen {
+            try self.match(tag: .hyphen)
+            node = Character("-")
         } else {
             // CHARACTER
             guard case .character(let c) = self.look else { throw ParseError.syntax }
@@ -163,7 +166,7 @@ extension Parser {
     /// starを一個以上繋げたもの
     /// sequence -> subSequence | ``
     mutating func sequence() throws -> Node {
-        if [.lParen, .character, .lSquareBracket, .lCurlyBracket]
+        if [.lParen, .character, .lSquareBracket, .lCurlyBracket, .hyphen]
             .contains(self.look.kind) {
             return try self.subSequence()
         } else {
@@ -177,7 +180,7 @@ extension Parser {
     /// subSequence -> star (subSequence | star)
     mutating func subSequence() throws -> Node {
         let node = try self.star()
-        if [.lParen, .character, .lSquareBracket, .lCurlyBracket]
+        if [.lParen, .character, .lSquareBracket, .lCurlyBracket, .hyphen]
             .contains(self.look.kind) {
             let node2 = try self.subSequence()
             return Concat(node, node2)
