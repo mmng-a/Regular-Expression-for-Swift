@@ -21,7 +21,7 @@ struct Lexer {
         let c = text.removeFirst()
         
         switch c {
-        case "\\":
+        case #"\"#:
             let first = text.removeFirst()
             switch first {
             case "d":
@@ -32,7 +32,7 @@ struct Lexer {
                 text.insert(contentsOf: "\t\n\r ]", at: text.startIndex)
                 return Token.lSquareBracket
             case "w":
-                text.insert(contentsOf: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\\d]", at: text.startIndex)
+                text.insert(contentsOf: #"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_\d]"#, at: text.startIndex)
                 return Token.lSquareBracket
             default:
                 return Token.character(first)
