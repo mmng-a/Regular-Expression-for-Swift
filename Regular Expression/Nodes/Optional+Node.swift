@@ -14,7 +14,7 @@ extension Optional: Node where Wrapped: Node {
         var frag = NFAFragment()
         let s1 = context.nextState()
         let s2 = context.nextState()
-        frag.connect(from: s1, to: s2, with: nil)
+        frag.connect(from: s1, to: s2, with: self as? Character)
         
         frag.start = s1
         frag.accepts = [s2]
@@ -22,5 +22,10 @@ extension Optional: Node where Wrapped: Node {
         return frag
     }
     
-    func toString() -> String { "" }
+    func toString() -> String {
+        switch self {
+        case .some(let wrapped): return wrapped.toString()
+        case .none: return ""
+        }
+    }
 }

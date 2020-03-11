@@ -85,15 +85,21 @@ extension Parser {
                 // [a-z]などの場合
                 try self.match(tag: .hyphen)
                 guard let start = node as? Character,
-                    self.look.kind != .rSquareBracket && self.look.kind != .EOF,
-                    let end = try factor() as? Character else {
+                    [.rSquareBracket, .EOF].contains(self.look.kind),
+                    let node2 = try? factor() else {
                         // 普通に`-`をCHARACTERとして扱っている場合
                         nodes.append(node)
                         nodes.append(Character("-"))
                         continue
                 }
-                let characters = [Character](from: start, to: end)
-                nodes.append(contentsOf: characters)
+                if let end = node2 as? Character {
+                    let characters = [Character](from: start, to: end)
+                    nodes.append(contentsOf: characters)
+                } else {
+                    nodes.append(node)
+                    nodes.append(Token.hyphen.character!)
+                    nodes.append(contentsOf: [Character](node2.toString()))
+                }
             }
             try self.match(tag: .rSquareBracket)
             
@@ -209,6 +215,7 @@ extension Parser {
     /// expression -> subExpression + `EOF`
     mutating func expression() throws -> NondeterministicFiniteAutomaton {
         let node = try self.subExpression()
+//        print(node)
         try self.match(tag: .EOF)
         
         var context = Context()
