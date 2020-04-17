@@ -14,5 +14,3 @@ protocol Node {
     
     func toString() -> String
 }
-
-

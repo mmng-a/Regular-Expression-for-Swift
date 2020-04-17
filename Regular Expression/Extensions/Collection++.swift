@@ -18,12 +18,7 @@ extension Collection where Element == Node {
         } else if self.count == 1 {
             return self[startIndex]
         } else {
-            let index = self.index(startIndex, offsetBy: 2)
-            let initialValue = Union(self[startIndex],
-                                     self[self.index(startIndex, offsetBy: 1)])
-            let node: Node = self[index...]
-                .reduce(initialValue) { r, e in Union(r, e) }
-            return node
+            return Union(Array(self))
         }
     }
 }

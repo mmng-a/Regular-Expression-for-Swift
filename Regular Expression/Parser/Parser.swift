@@ -114,8 +114,8 @@ extension Parser {
             node = c
         }
         
-        guard self.look == .lCurlyBracket else { return node }
         
+        guard self.look == .lCurlyBracket else { return node }
         // {3}, {1, 3} など文字数指定のある場合 ↓
         try self.match(tag: .lCurlyBracket)
         let string = try self.sequence().toString()
@@ -162,7 +162,7 @@ extension Parser {
         } else if self.look == .question {
             // question -> factor | ``
             try self.match(tag: .question)
-            node = Union(node, Optional<Character>.none)
+            node = Union([node, Optional<Character>.none])
         }
         return node
     }
@@ -204,7 +204,7 @@ extension Parser {
         if self.look == .union {
             try self.match(tag: .union)
             let node2 = try self.subExpression()
-            node = Union(node, node2)
+            node = Union([node, node2])
         }
         return node
     }

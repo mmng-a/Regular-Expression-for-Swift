@@ -8,28 +8,31 @@
 
 struct Union: Node {
     
-    var node1, node2: Node
+    var nodes: [Node]
     
-    init(_ node1: Node, _ node2: Node) {
-        self.node1 = node1
-        self.node2 = node2
+    init(_ nodes: [Node]) {
+        self.nodes = nodes
     }
     
     func assemble(_ context: inout Context) -> NFAFragment {
         
-        let frag1 = self.node1.assemble(&context)
-        let frag2 = self.node2.assemble(&context)
-        var frag = NFAFragment.compose(frag1, frag2)
+        let frags = nodes.map { $0.assemble(&context) }
+        var frag = frags[1...].reduce(frags[0]) {
+            NFAFragment.compose($0, $1)
+        }
         
         let state = context.nextState()
-        frag.connect(from: state, to: frag1.start, with: nil)
-        frag.connect(from: state, to: frag2.start, with: nil)
+        frags.forEach {
+            frag.connect(from: state, to: $0.start, with: nil)
+        }
         
         frag.start = state
-        frag.accepts = frag1.accepts.union(frag2.accepts)
+        frag.accepts = Set(frags.flatMap { $0.accepts })
         
         return frag
     }
     
-    func toString() -> String { "\(node1.toString())|\(node2.toString())" }
+    func toString() -> String {
+        self.nodes.map { $0.toString() }.joined(separator: "|")
+    }
 }

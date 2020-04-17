@@ -227,7 +227,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = "Masashi Aso";
 				TargetAttributes = {
 					BAA7170824111B700043DC98 = {
@@ -460,6 +460,7 @@
 		BAC6DA08240FA6D400F410BC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7947K7LHD3;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -471,6 +472,7 @@
 		BAC6DA09240FA6D400F410BC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7947K7LHD3;
 				ENABLE_HARDENED_RUNTIME = YES;

@@ -60,10 +60,10 @@ extension Regex {
             case ("^", "$"):
                 pattern = String(pattern.dropFirst().dropLast())
                 condition = .all
-            case ("^",   _):
+            case ("^",  _ ):
                 pattern = String(pattern.dropFirst())
                 condition = .head
-            case (  _, "$"):
+            case ( _ , "$"):
                 pattern = String(pattern.dropLast())
                 condition = .tail
             default:
@@ -81,3 +81,4 @@ extension Regex {
 }
 
 Regex.main()
+
