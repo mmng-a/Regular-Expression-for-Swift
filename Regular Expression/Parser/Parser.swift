@@ -63,7 +63,8 @@ extension Parser {
     /// 規則F: `a`, `(ab|c*)`
     ///
     /// 括弧で囲まれたsubExpressionかCHARACTER
-    /// factor -> (`(` subExpression `)`) | CHARACTER
+    ///
+    /// `factor -> ( subExpression ) | CHARACTER`
     mutating func factor() throws -> Node {
         let node: Node
         switch self.look {
@@ -151,7 +152,8 @@ extension Parser {
     /// 規則E: `a*`, `a`, `(ab)*`
     ///
     /// factor、もしくはfactorに*をつけたもの
-    /// star -> (factor `*`) | factor
+    ///
+    /// `star -> (factor *) | factor`
     mutating func star() throws -> Node {
         let node = try self.factor()
         switch self.look {
@@ -174,7 +176,8 @@ extension Parser {
     /// 規則D: `ab`, `a*bc`, `(ab)*cd`
     ///
     /// starを一個以上繋げたもの
-    /// sequence -> subSequence | ``
+    ///
+    /// `sequence -> subSequence | null`
     mutating func sequence() throws -> Node {
         if [.lParen, .character, .lSquareBracket, .lCurlyBracket, .hyphen]
             .contains(self.look.kind) {
@@ -187,7 +190,8 @@ extension Parser {
     /// 規則C: `(ab)*cd`, ``
     ///
     /// 文字列か空文字
-    /// subSequence -> star (subSequence | star)
+    ///
+    /// `subSequence -> star (subSequence | star)`
     mutating func subSequence() throws -> Node {
         let node = try self.star()
         if [.lParen, .character, .lSquareBracket, .lCurlyBracket, .hyphen]
@@ -202,7 +206,8 @@ extension Parser {
     /// 規則B: `a|b`, `a*bc|(ab)*cd|`
     ///
     /// sequenceを`|`で一個以上繋げたもの
-    /// subExpression -> (sequence `|` subExpression) | sequence
+    ///
+    /// `subExpression -> (sequence | subExpression) | sequence`
     mutating func subExpression() throws -> Node {
         var node = try self.sequence()
         if self.look == .union {
@@ -216,7 +221,8 @@ extension Parser {
     /// 規則A: `a*bc|(ab)*cd|` + EOF
     /// 
     /// 末尾にEOFがある
-    /// expression -> subExpression + `EOF`
+    ///
+    /// `expression -> subExpression + EOF`
     mutating func expression() throws -> NondeterministicFiniteAutomaton {
         let node = try self.subExpression()
 //        print(node)
