@@ -9,10 +9,13 @@
 struct DeterministicFiniteAutomaton {
     var transition: (_ state: Set<Int>, _ character: Character) -> Set<Int>
     var start: Set<Int>
-    var accepts: NonDisjointSet<Int>
+    var accepts: Set<Int>
     
-    init(transition: @escaping (_ state: Set<Int>, _ character: Character) -> Set<Int>,
-         start: Set<Int>, accepts: NonDisjointSet<Int>) {
+    init(
+        transition: @escaping (_ state: Set<Int>, _ character: Character) -> Set<Int>,
+        start: Set<Int>,
+        accepts: Set<Int>
+    ) {
         (self.transition, self.start, self.accepts) = (transition, start, accepts)
     }
     
@@ -38,7 +41,7 @@ extension DeterministicFiniteAutomaton {
         self = .init(
             transition: transition(set:alpha:),
             start: NFA.epsilonExpand(set: [NFA.start]),
-            accepts: NonDisjointSet(base: NFA.epsilonExpand(set: NFA.accepts))
+            accepts: NFA.epsilonExpand(set: NFA.accepts)
         )
     }
     

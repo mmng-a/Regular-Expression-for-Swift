@@ -72,13 +72,13 @@ extension Parser {
     ///
     /// `factor -> ( subExpression ) | CHARACTER`
     mutating func factor() throws -> Node {
-        let node: Node
         switch self.looking {
         case .lParen:
             // `(` subExpression `)`
             try self.matchKind(of: .lParen)
-            node = try self.subExpression()
+            let node = try self.subExpression()
             try self.matchKind(of: .rParen)
+            return node
         case .lSquareBracket:
             // [ CHARACTERs ]
             try self.matchKind(of: .lSquareBracket)
@@ -105,38 +105,15 @@ extension Parser {
             }
             try self.matchKind(of: .rSquareBracket)
             
-            node = Node.union(nodes)
+            return Node.union(nodes)
         case .hyphen:
             try self.matchKind(of: .hyphen)
-            node = .character(Token.hyphen.character!)
+            return .character(Token.hyphen.character!)
         default:
             // CHARACTER
             guard case .character(let char) = self.looking else { throw ParseError.syntax }
             try self.matchKind(of: .character(" "))
-            node = .character(char)
-        }
-        
-        // {3}, {1, 3} など文字数指定のある場合
-        guard self.looking == .lCurlyBracket else { return node }
-        try self.matchKind(of: .lCurlyBracket)
-        let string = try self.sequence().string
-        try self.matchKind(of: .rCurlyBracket)
-        let strings = string.filter { $0 != " " }.split(separator: ",")
-        
-        switch strings.count {
-        case 1:         // {3}
-            guard let count = UInt(strings[0]) else { throw ParseError.number }
-            return Node.repeat(node, ClosedRange(at: count))
-        case 2:  // {1, 3}
-            guard let start = UInt(strings[0]), let end = UInt(strings[1]) else {
-                throw ParseError.number
-            }
-            guard 0 <= start, start <= end else {
-                throw ParseError.other("{a,b} must be `0 <= a <= b`")
-            }
-            return Node.repeat(node, start...end)
-        default:
-            throw ParseError.other("{} must be {num} or {start,end}")
+            return .character(char)
         }
     }
     
@@ -159,6 +136,27 @@ extension Parser {
             // question -> factor | ``
             try self.matchKind(of: .question)
             return Node.union([node, .null])
+        case .lCurlyBracket:
+            try self.matchKind(of: .lCurlyBracket)
+            let string = try self.sequence().string
+            try self.matchKind(of: .rCurlyBracket)
+            let strings = string.filter { $0 != " " }.split(separator: ",")
+            
+            switch strings.count {
+            case 1:     // {3}
+                guard let count = UInt(strings[0]) else { throw ParseError.number }
+                return Node.repeat(node, ClosedRange(at: count))
+            case 2:     // {1, 3}
+                guard let start = UInt(strings[0]), let end = UInt(strings[1]) else {
+                    throw ParseError.number
+                }
+                guard 0 <= start, start <= end else {
+                    throw ParseError.other("{a,b} must be `0 <= a <= b`")
+                }
+                return Node.repeat(node, start...end)
+            default:
+                throw ParseError.other("{} must be {num} or {start,end}")
+            }
         default:
             return node
         }
