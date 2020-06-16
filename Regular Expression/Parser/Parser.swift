@@ -23,9 +23,9 @@ struct Parser {
             case .character, .union, .star, .plus, .question,
                  .lParen, .lSquareBracket, .hyphen, .lCurlyBracket, .EOF:
                 throw ParseError.syntax
-            case .rParen:         throw ParseError.paren
-            case .rSquareBracket: throw ParseError.squareBracket
-            case .rCurlyBracket:  throw ParseError.curlyBracket
+            case .rParen:         throw ParseError.missing(.paren)
+            case .rSquareBracket: throw ParseError.missing(.square)
+            case .rCurlyBracket:  throw ParseError.missing(.curly)
             }
         }
         self.move()
@@ -39,20 +39,27 @@ struct Parser {
 extension Parser {
     enum ParseError: Error, CustomStringConvertible {
         case syntax
-        case curlyBracket
-        case squareBracket
-        case paren
+        case missing(BracketType)
         case number
         case other(String)
         
+        enum BracketType {
+            case curly, square, paren
+            var character: Character {
+                switch self {
+                case .curly:  return "}"
+                case .square: return "]"
+                case .paren:  return ")"
+                }
+            }
+        }
+        
         var description: String {
             switch self {
-            case .syntax:        return "Syntax Error"
-            case .curlyBracket:  return "Missing `}`"
-            case .squareBracket: return "Missing `]`"
-            case .paren:         return "Missing `)`"
-            case .number:        return "Expect number in `{}`"
-            case .other(let s):  return s
+            case .syntax:         return "Syntax Error"
+            case .missing(let b): return "Missing `\(b.character)`"
+            case .number:         return "Expect number in `{}`"
+            case .other(let s):   return s
             }
         }
     }

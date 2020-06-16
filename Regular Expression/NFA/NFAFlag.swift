@@ -22,11 +22,8 @@ extension NondeterministicFiniteAutomaton {
             }
         }
         
-        mutating func connect(
-            from state1: Int, to state2: Int, with character: Character?
-        ) {
-            let input = Input(state1, character)
-            self.dic[input, default: []].insert(state2)
+        mutating func connect(from s1: Int, to s2: Int, with char: Character?) {
+            self.dic[Input(s1, char), default: Set()].insert(s2)
         }
         
         func newSkelton() -> Flag {

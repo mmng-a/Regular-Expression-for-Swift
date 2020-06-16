@@ -7,7 +7,7 @@
 //
 
 extension ClosedRange {
-    init(point: Bound) {
+    init(at point: Bound) {
         self = point...point
     }
 }
