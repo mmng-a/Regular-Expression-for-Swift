@@ -98,8 +98,8 @@ extension Parser {
                     self.looking == .rSquareBracket,
                     let node2 = try? factor(),
                     case let .character(end) = node2 {
-                    let characters = [Character](from: start, to: end)
-                    nodes.append(contentsOf: characters.map { Node.character($0) })
+                        let characters = [Character](from: start, to: end)
+                        nodes.append(contentsOf: characters.map { Node.character($0) })
                 } else {
                     nodes.append(node)
                     nodes.append(.character(Token.hyphen.character!))

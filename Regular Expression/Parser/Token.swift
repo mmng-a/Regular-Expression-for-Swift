@@ -38,8 +38,10 @@ extension Token: Hashable, Equatable {}
 extension Token {
     func isSameKind(of other: Token) -> Bool {
         if case other = self {
+            print(self, other, true)
             return true
         } else {
+            print(self, other, false)
             return false
         }
     }
