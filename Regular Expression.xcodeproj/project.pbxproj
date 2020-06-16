@@ -11,6 +11,7 @@
 		BAA7170C24111B700043DC98 /* Regular_Expression_Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA7170B24111B700043DC98 /* Regular_Expression_Test.swift */; };
 		BAA71712241147A30043DC98 /* Collection++.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA71711241147A30043DC98 /* Collection++.swift */; };
 		BAB61F0F2498E5C600EC629B /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB61F0E2498E5C600EC629B /* Node.swift */; };
+		BAB61F112498EE9600EC629B /* ClosedRange++.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB61F102498EE9600EC629B /* ClosedRange++.swift */; };
 		BAC6DA04240FA6D400F410BC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC6DA03240FA6D400F410BC /* main.swift */; };
 		BAC6DA0B240FA71C00F410BC /* NondeterministicFiniteAutonaton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC6DA0A240FA71C00F410BC /* NondeterministicFiniteAutonaton.swift */; };
 		BAC6DA0D240FA73600F410BC /* NFAFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC6DA0C240FA73600F410BC /* NFAFlag.swift */; };
@@ -50,6 +51,7 @@
 		BAA7170D24111B700043DC98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BAA71711241147A30043DC98 /* Collection++.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection++.swift"; sourceTree = "<group>"; };
 		BAB61F0E2498E5C600EC629B /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
+		BAB61F102498EE9600EC629B /* ClosedRange++.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClosedRange++.swift"; sourceTree = "<group>"; };
 		BAC6DA00240FA6D400F410BC /* Regular Expression */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Regular Expression"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAC6DA03240FA6D400F410BC /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BAC6DA0A240FA71C00F410BC /* NondeterministicFiniteAutonaton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NondeterministicFiniteAutonaton.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				BAE9396F2411785000292840 /* Character++.swift */,
 				BAA71711241147A30043DC98 /* Collection++.swift */,
 				BAC6DA0E240FA75E00F410BC /* NonDisjointSet.swift */,
+				BAB61F102498EE9600EC629B /* ClosedRange++.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -300,6 +303,7 @@
 				BAC6DA26240FAA4D00F410BC /* Concat.swift in Sources */,
 				BAC6DA0B240FA71C00F410BC /* NondeterministicFiniteAutonaton.swift in Sources */,
 				BAC6DA15240FA7A500F410BC /* DFARuntime.swift in Sources */,
+				BAB61F112498EE9600EC629B /* ClosedRange++.swift in Sources */,
 				BAC6DA1F240FAA0B00F410BC /* Character+Node.swift in Sources */,
 				BAC6DA0F240FA75E00F410BC /* NonDisjointSet.swift in Sources */,
 				BAC6DA0D240FA73600F410BC /* NFAFlag.swift in Sources */,
