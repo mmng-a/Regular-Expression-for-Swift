@@ -33,40 +33,14 @@ enum Token {
     }
 }
 
-extension Token: Equatable {
-    
-    enum Kind {
-        case character
-        case union, star, plus, question
-        case lParen, rParen
-        case lSquareBracket, rSquareBracket, hyphen
-        case lCurlyBracket, rCurlyBracket
-        case EOF
-    }
-    
-    var kind: Kind {
-        switch self {
-        case .character(_):   return .character
-        case .union:          return .union
-        case .star:           return .star
-        case .plus:           return .plus
-        case .question:       return .question
-        case .lParen:         return .lParen
-        case .rParen:         return .rParen
-        case .lSquareBracket: return .lSquareBracket
-        case .rSquareBracket: return .rSquareBracket
-        case .hyphen:         return .hyphen
-        case .lCurlyBracket:  return .lCurlyBracket
-        case .rCurlyBracket:  return .rCurlyBracket
-        case .EOF:            return .EOF
+extension Token: Hashable, Equatable {}
+
+extension Token {
+    func isSameKind(of other: Token) -> Bool {
+        if case other = self {
+            return true
+        } else {
+            return false
         }
-    }
-    
-    static func ==(lhs: Token, rhs: Token) -> Bool {
-        if case .character(let l) = lhs,
-            case .character(let r) = rhs {
-            return l == r
-        }
-        return lhs.kind == rhs.kind
     }
 }
