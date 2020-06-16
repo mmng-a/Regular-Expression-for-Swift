@@ -7,7 +7,8 @@
 //
 
 extension NondeterministicFiniteAutomaton {
-    struct Fragment {
+    
+    struct Flag {
         var start: Int!
         var accepts: Set<Int> = []
         var dic: [Input: Set<Int>] = [:]
@@ -28,12 +29,12 @@ extension NondeterministicFiniteAutomaton {
             self.dic[input, default: []].insert(state2)
         }
         
-        func newSkelton() -> Fragment {
-            Fragment(start: nil, accepts: [], dic: self.dic)
+        func newSkelton() -> Flag {
+            Flag(start: nil, accepts: [], dic: self.dic)
         }
         
         // `__or__`
-        static func compose(_ x: Fragment, _ y: Fragment) -> Fragment {
+        static func compose(_ x: Flag, _ y: Flag) -> Flag {
             var new = x.newSkelton()
             for (key, value) in y.dic {
                 new.dic[key] = value

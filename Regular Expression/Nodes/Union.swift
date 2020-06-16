@@ -6,19 +6,19 @@
 //  Copyright © 2020 Masashi Aso. All rights reserved.
 //
 
-struct Union: Node {
+struct Union: NodeType {
     
-    var nodes: [Node]
+    var nodes: [NodeType]
     
-    init(_ nodes: [Node]) {
+    init(_ nodes: [NodeType]) {
         self.nodes = nodes
     }
     
-    func assemble(_ context: inout Context) -> NFAFragment {
+    func assemble(_ context: inout Context) -> NFAFlag {
         
         let frags = nodes.map { $0.assemble(&context) }
         var frag = frags[1...].reduce(frags[0]) {
-            NFAFragment.compose($0, $1)
+            NFAFlag.compose($0, $1)
         }
         
         let state = context.nextState()

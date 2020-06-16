@@ -7,11 +7,11 @@
 //
 
 // for empty character (epsilon)
-extension Optional: Node where Wrapped: Node {
+extension Optional: NodeType where Wrapped: NodeType {
     
-    func assemble(_ context: inout Context) -> NFAFragment {
+    func assemble(_ context: inout Context) -> NFAFlag {
         
-        var frag = NFAFragment()
+        var frag = NFAFlag()
         let s1 = context.nextState()
         let s2 = context.nextState()
         frag.connect(from: s1, to: s2, with: self as? Character)

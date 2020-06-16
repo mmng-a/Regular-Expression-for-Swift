@@ -65,8 +65,8 @@ extension Parser {
     /// 括弧で囲まれたsubExpressionかCHARACTER
     ///
     /// `factor -> ( subExpression ) | CHARACTER`
-    mutating func factor() throws -> Node {
-        let node: Node
+    mutating func factor() throws -> NodeType {
+        let node: NodeType
         switch self.look {
         case .lParen:
             // `(` subExpression `)`
@@ -77,7 +77,7 @@ extension Parser {
             // [ CHARACTERs ]
             try self.match(tag: .lSquareBracket)
             // ココうまい方法ありそう
-            var nodes = [Node]()
+            var nodes = [NodeType]()
             while self.look.kind != .rSquareBracket {
                 let node = try factor()
                 guard self.look.kind == .hyphen else {
@@ -124,7 +124,7 @@ extension Parser {
         try self.match(tag: .rCurlyBracket)
         let strings = string.filter { $0 != " " }.split(separator: ",")
         
-        func makeConcat(count: Int) -> Node {
+        func makeConcat(count: Int) -> NodeType {
             count == 1 ? node :
                 (2..<count).reduce(Concat(node, node)) { r, _ in Concat(node, r) }
         }
@@ -154,7 +154,7 @@ extension Parser {
     /// factor、もしくはfactorに*をつけたもの
     ///
     /// `star -> (factor *) | factor`
-    mutating func star() throws -> Node {
+    mutating func star() throws -> NodeType {
         let node = try self.factor()
         switch self.look {
         case .plus:
@@ -178,7 +178,7 @@ extension Parser {
     /// starを一個以上繋げたもの
     ///
     /// `sequence -> subSequence | null`
-    mutating func sequence() throws -> Node {
+    mutating func sequence() throws -> NodeType {
         if [.lParen, .character, .lSquareBracket, .lCurlyBracket, .hyphen]
             .contains(self.look.kind) {
             return try self.subSequence()
@@ -192,7 +192,7 @@ extension Parser {
     /// 文字列か空文字
     ///
     /// `subSequence -> star (subSequence | star)`
-    mutating func subSequence() throws -> Node {
+    mutating func subSequence() throws -> NodeType {
         let node = try self.star()
         if [.lParen, .character, .lSquareBracket, .lCurlyBracket, .hyphen]
             .contains(self.look.kind) {
@@ -208,7 +208,7 @@ extension Parser {
     /// sequenceを`|`で一個以上繋げたもの
     ///
     /// `subExpression -> (sequence | subExpression) | sequence`
-    mutating func subExpression() throws -> Node {
+    mutating func subExpression() throws -> NodeType {
         var node = try self.sequence()
         if self.look == .union {
             try self.match(tag: .union)

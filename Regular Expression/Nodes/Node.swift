@@ -1,16 +1,15 @@
 //
-//  Node.swift
+//  Node2.swift
 //  Regular Expression
 //
-//  Created by Masashi Aso on 2020/03/04.
+//  Created by Masashi Aso on 2020/06/16.
 //  Copyright © 2020 Masashi Aso. All rights reserved.
 //
 
-protocol Node {
-    
-    typealias NFAFragment = NondeterministicFiniteAutomaton.Fragment
-    
-    func assemble(_ context: inout Context) -> NFAFragment
-    
-    func toString() -> String
+enum Node {
+    case character(Character?)
+    indirect case `repeat`(Node, UInt?)
+    case expression([Node])
+    case union([Node])
 }
+

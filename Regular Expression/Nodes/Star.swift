@@ -6,15 +6,15 @@
 //  Copyright © 2020 Masashi Aso. All rights reserved.
 //
 
-struct Star: Node {
+struct Star: NodeType {
     
-    var node: Node
+    var node: NodeType
     
-    init(_ node: Node) {
+    init(_ node: NodeType) {
         self.node = node
     }
     
-    func assemble(_ context: inout Context) -> NFAFragment {
+    func assemble(_ context: inout Context) -> NFAFlag {
         
         let fragOriginal = node.assemble(&context)
         var frag = fragOriginal.newSkelton()

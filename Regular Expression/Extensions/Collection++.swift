@@ -7,12 +7,12 @@
 //
 
 
-extension Collection where Element == Node {
+extension Collection where Element == NodeType {
     
     /// Make a node from `Collection<Node>`
     ///
     /// returns `Optional<Character>.none`, ` Character`, `Union<Node, Union<Node, ...>>`
-    func makeNode() -> Node {
+    func makeNode() -> NodeType {
         if self.isEmpty {
             return Optional<Character>.none
         } else if self.count == 1 {
