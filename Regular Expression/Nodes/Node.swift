@@ -7,14 +7,16 @@
 //
 
 enum Node {
-    case character(Character)
     case null
+    case character(Character)
     indirect case `repeat`(Node, Optional<ClosedRange<UInt>>)
     case concat([Node])
     case union([Node])
 }
 
-extension Node: NodeType {
+extension Node {
+    
+    typealias NFAFlag = NondeterministicFiniteAutomaton.Flag
     
     func assemble(_ context: inout Context) -> NFAFlag {
         switch self {
@@ -104,7 +106,27 @@ extension Node: NodeType {
         return flag
     }
     
-    func toString() -> String {
-        ""
+    var string: String {
+        switch self {
+        case .null:                  return ""
+        case .character(let char):   return "\(char)"
+        case .concat(let nodes):     return nodes.map(\.string).joined()
+        case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
+        case .repeat(let node, nil): return node.string + "*"
+        case .repeat(let node, let .some(range)):
+            return node.string + "{\(range.lowerBound),\(range.upperBound)}"
+        }
     }
+}
+
+extension Node {
+    
+    static func star(_ node: Node) -> Node {
+        Node.repeat(node, nil)
+    }
+    
+    static func plus(_ node: Node) -> Node {
+        Node.concat([node, .star(node)])
+    }
+    
 }
