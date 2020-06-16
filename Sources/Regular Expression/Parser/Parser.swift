@@ -109,8 +109,7 @@ extension Parser {
         case .hyphen:
             try self.matchKind(of: .hyphen)
             return .character(Token.hyphen.character!)
-        default:
-            // CHARACTER
+        default:    // CHARACTER
             guard case .character(let char) = self.looking else { throw ParseError.syntax }
             try self.matchKind(of: .character(" "))
             return .character(char)
@@ -147,15 +146,13 @@ extension Parser {
                 guard let count = UInt(strings[0]) else { throw ParseError.number }
                 return Node.repeat(node, ClosedRange(at: count))
             case 2:     // {1, 3}
-                guard let start = UInt(strings[0]), let end = UInt(strings[1]) else {
-                    throw ParseError.number
-                }
-                guard 0 <= start, start <= end else {
-                    throw ParseError.other("{a,b} must be `0 <= a <= b`")
-                }
+                guard let start = UInt(strings[0]), let end = UInt(strings[1])
+                    else { throw ParseError.number }
+                guard 0 <= start, start <= end
+                    else { throw ParseError.other("{a,b} must be `0 <= a <= b`") }
                 return Node.repeat(node, start...end)
             default:
-                throw ParseError.other("{} must be {num} or {start,end}")
+                throw ParseError.other("{} must be {count} or {start,end}")
             }
         default:
             return node

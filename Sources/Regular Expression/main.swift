@@ -19,6 +19,8 @@ struct Regex: ParsableCommand {
     @Argument(help: "If you enter the text, you can just see the result. Or you can try regex many times.")
     var text: String?
     
+    @Flag(help: "match '^' and '$'.")
+    var matchHeadAndTail: Bool
 }
 
 extension Regex {
@@ -35,9 +37,8 @@ extension Regex {
         case .some(let string):
             printMatch(text: string)
         case .none:
-            print("Enter any texts")
-            while true {
-                guard let string = readLine() else { continue }
+            print("[Enter any texts]")
+            while let string = readLine() {
                 printMatch(text: string)
             }
         }
@@ -54,21 +55,11 @@ extension Regex {
     func createDFA() throws -> DeterministicFiniteAutomaton {
         // 前方一致、完全一致、後方一致を振り分ける
         var pattern = self.pattern
-        var condition: DeterministicFiniteAutomaton.Condition = .part
-        if let first = pattern.first, let last = pattern.last {
-            switch (first, last) {
-            case ("^", "$"):
-                pattern = String(pattern.dropFirst().dropLast())
-                condition = .all
-            case ("^",  _ ):
-                pattern = String(pattern.dropFirst())
-                condition = .head
-            case ( _ , "$"):
-                pattern = String(pattern.dropLast())
-                condition = .tail
-            default:
-                condition = .part
-            }
+        let condition: DeterministicFiniteAutomaton.Condition
+        if matchHeadAndTail {
+            condition =  getCondition(pattern: &pattern)
+        } else {
+            condition = .all
         }
         
         let lexer = Lexer(text: pattern)
@@ -77,6 +68,23 @@ extension Regex {
         var DFA = DeterministicFiniteAutomaton(from: NFA)
         DFA.condition = condition
         return DFA
+    }
+    
+    func getCondition(pattern: inout String) -> DeterministicFiniteAutomaton.Condition {
+        switch (pattern.first, pattern.last) {
+        case ("^", "$"):
+            pattern.removeFirst()
+            pattern.removeLast()
+            return .all
+        case ("^",  _ ):
+            pattern.removeFirst()
+            return .head
+        case ( _ , "$"):
+            pattern.removeLast()
+            return .tail
+        default:
+            return .part
+        }
     }
 }
 
