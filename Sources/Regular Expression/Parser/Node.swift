@@ -16,8 +16,6 @@ enum Node {
 
 extension Node {
     
-    typealias NFAFlag = NondeterministicFiniteAutomaton.Flag
-    
     func assemble(_ context: inout Context) -> NFAFlag {
         switch self {
         case .null:
@@ -47,10 +45,6 @@ extension Node {
             
         // TODO: 高速化
         case .repeat(let node, let .some(range)):
-            guard range.lowerBound == 0 && range.upperBound == 0 else {
-                return assembleNull(&context)
-            }
-            
             let unionNode = Node.union([node, .null])
             let lowerNodes = Array(repeating: node, count: Int(range.lowerBound))
             let upperNodes = Array(repeating: unionNode, count: range.count - 1)
@@ -61,11 +55,9 @@ extension Node {
             )
             
         case .concat(let nodes):
-            guard !nodes.isEmpty else { return assembleNull(&context) }
             return assembleConcat(nodes: nodes, context: &context)
             
         case .union(let nodes):
-            guard !nodes.isEmpty else { return assembleNull(&context) }
             return assembleUnion(nodes: nodes, context: &context)
         }
     }
@@ -80,19 +72,27 @@ extension Node {
     }
     
     fileprivate func assembleConcat(nodes: [Node], context: inout Context) -> NFAFlag {
+        guard !nodes.isEmpty else { return assembleNull(&context) }
+        
         let flags = nodes.map { $0.assemble(&context) }
         var flag = flags[1...].reduce(flags[0], NFAFlag.compose)
         
-        for state in flags[0].accepts {
-            flag.connect(from: state, to: flags.last!.start, with: nil)
+        if flags.count >= 2 {
+            for (first, second) in zip(flags[..<flags.endIndex], flags[1...]) {
+                for state in first.accepts {
+                    flag.connect(from: state, to: second.start, with: nil)
+                }
+            }
         }
+        
         flag.start = flags.first!.start
         flag.accepts = flags.last!.accepts
-        
         return flag
     }
     
     fileprivate func assembleUnion(nodes: [Node], context: inout Context) -> NFAFlag {
+        guard !nodes.isEmpty else { return assembleNull(&context) }
+        
         let flags = nodes.map { $0.assemble(&context) }
         var flag = flags[1...].reduce(flags[0], NFAFlag.compose)
         
@@ -113,6 +113,8 @@ extension Node {
         case .concat(let nodes):     return nodes.map(\.string).joined()
         case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
         case .repeat(let node, nil): return node.string + "*"
+        case .repeat(let node, let .some(range)) where range.count == 1:
+            return node.string + "{\(range.lowerBound)}"
         case .repeat(let node, let .some(range)):
             return node.string + "{\(range.lowerBound),\(range.upperBound)}"
         }
@@ -129,4 +131,27 @@ extension Node {
         Node.concat([node, .star(node)])
     }
     
+}
+
+extension Node: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .null:
+            return "Node.null"
+        case .character(let c):
+            return c.description
+        case .concat(let nodes):
+            let nodesDescription = nodes
+                .map(\.description)
+                .joined(separator: ", ")
+            return "Node.concat([\(nodesDescription)])"
+        case .union(let nodes):
+            let nodesDescription = nodes
+                .map(\.description)
+                .joined(separator: ", ")
+            return "Node.union([\(nodesDescription)])"
+        case .repeat(let node, let range):
+            return "Node.repeat(\(node), \(range?.description ?? "nil"))"
+        }
+    }
 }

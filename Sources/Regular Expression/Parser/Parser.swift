@@ -17,8 +17,6 @@ struct Parser {
     }
     
     mutating func matchKind(of tag: Token) throws {
-        print(looking!)
-        
         guard tag.isSameKind(of: self.looking) else {
             switch tag {
             case .character, .union, .star, .plus, .question,
@@ -95,8 +93,8 @@ extension Parser {
                 // [a-z]などの場合
                 try self.matchKind(of: .hyphen)
                 if case let .character(start) = node,
-                    self.looking == .rSquareBracket,
                     let node2 = try? factor(),
+                    self.looking == .rSquareBracket,
                     case let .character(end) = node2 {
                         let characters = [Character](from: start, to: end)
                         nodes.append(contentsOf: characters.map { Node.character($0) })
@@ -151,11 +149,11 @@ extension Parser {
         let node = try self.factor()
         switch self.looking {
         case .plus:
-            try self.matchKind(of: .star)
+            try self.matchKind(of: .plus)
             return Node.plus(node)
         case .star:
             // plus -> factor factor `*`
-            try self.matchKind(of: .plus)
+            try self.matchKind(of: .star)
             return Node.star(node)
         case .question:
             // question -> factor | ``
@@ -218,12 +216,12 @@ extension Parser {
     /// `expression -> subExpression + EOF`
     mutating func expression() throws -> NondeterministicFiniteAutomaton {
         let node = try self.subExpression()
-        print(node)
+//        print(node)
         try self.matchKind(of: .EOF)
         
         var context = Context()
         let fragment = node.assemble(&context)
-        print(fragment)
+//        print(fragment)
         return fragment.build()
     }
 }

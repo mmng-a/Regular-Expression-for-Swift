@@ -6,6 +6,8 @@
 //  Copyright © 2020 Masashi Aso. All rights reserved.
 //
 
+typealias NFAFlag = NondeterministicFiniteAutomaton.Flag
+
 extension NondeterministicFiniteAutomaton {
     
     struct Flag {
@@ -13,12 +15,15 @@ extension NondeterministicFiniteAutomaton {
         var accepts: Set<Int> = []
         var dic: [Input: Set<Int>] = [:]
         
-        struct Input: Hashable {
+        struct Input: Hashable, CustomStringConvertible {
             var state: Int
             var character: Character?
             init(_ state: Int, _ character: Character?) {
                 self.state = state
                 self.character = character
+            }
+            var description: String {
+                "NFAFlag.Input(start: \(state), character: \(character?.description ?? "nil"))"
             }
         }
         

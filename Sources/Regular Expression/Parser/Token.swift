@@ -37,12 +37,23 @@ extension Token: Hashable, Equatable {}
 
 extension Token {
     func isSameKind(of other: Token) -> Bool {
-        if case other = self {
-            print(self, other, true)
+        guard case .character = self else {
+            return self == other
+        }
+        if case .character = self, case .character = other {
             return true
         } else {
-            print(self, other, false)
             return false
+        }
+    }
+}
+
+extension Token: CustomStringConvertible {
+    var description: String {
+        if case .character(let c) = self {
+            return "Token(char: \(c))"
+        } else {
+            return "Token(\(character.flatMap(String.init) ?? "nil"))"
         }
     }
 }
