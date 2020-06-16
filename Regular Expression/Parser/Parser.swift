@@ -66,17 +66,18 @@ extension Parser {
     /// factor -> (`(` subExpression `)`) | CHARACTER
     mutating func factor() throws -> Node {
         let node: Node
-        if self.look == .lParen {
+        switch self.look {
+        case .lParen:
             // `(` subExpression `)`
             try self.match(tag: .lParen)
             node = try self.subExpression()
             try self.match(tag: .rParen)
-        } else if self.look == .lSquareBracket {
+        case .lSquareBracket:
             // [ CHARACTERs ]
             try self.match(tag: .lSquareBracket)
             // ココうまい方法ありそう
             var nodes = [Node]()
-            while self.look.kind != .rSquareBracket && self.look.kind != .EOF {
+            while self.look.kind != .rSquareBracket {
                 let node = try factor()
                 guard self.look.kind == .hyphen else {
                     nodes.append(node)
@@ -85,7 +86,7 @@ extension Parser {
                 // [a-z]などの場合
                 try self.match(tag: .hyphen)
                 guard let start = node as? Character,
-                    [.rSquareBracket, .EOF].contains(self.look.kind),
+                    self.look.kind == .rSquareBracket,
                     let node2 = try? factor() else {
                         // 普通に`-`をCHARACTERとして扱っている場合
                         nodes.append(node)
@@ -104,10 +105,10 @@ extension Parser {
             try self.match(tag: .rSquareBracket)
             
             node = nodes.makeNode()
-        } else if self.look == .hyphen {
+        case .hyphen:
             try self.match(tag: .hyphen)
             node = Character("-")
-        } else {
+        default:
             // CHARACTER
             guard case .character(let c) = self.look else { throw ParseError.syntax }
             try self.match(tag: .character)
@@ -127,12 +128,13 @@ extension Parser {
                 (2..<count).reduce(Concat(node, node)) { r, _ in Concat(node, r) }
         }
         
-        if strings.count == 1 {         // {3}
+        switch strings.count {
+        case 1:         // {3}
             guard let count = Int(strings[0]) else { throw ParseError.number }
             guard count >= 0 else { throw ParseError.other("{num} must be greater than 0") }
             // return Concat(node, Concat(node, Concat(node, ...)))
             return makeConcat(count: count)
-        } else if strings.count == 2 {  // {1, 3}
+        case 2:  // {1, 3}
             guard let start = Int(strings[0]), let end = Int(strings[1]) else {
                 throw ParseError.number
             }
@@ -141,7 +143,7 @@ extension Parser {
             }
             // Many times, return Union(Concat(), Union(Concat(), ...))
             return (start...end).map(makeConcat(count:)).makeNode()
-        } else {
+        default:
             throw ParseError.other("{} must be {num} or {start,end}")
         }
     }
@@ -151,20 +153,22 @@ extension Parser {
     /// factor、もしくはfactorに*をつけたもの
     /// star -> (factor `*`) | factor
     mutating func star() throws -> Node {
-        var node = try self.factor()
-        if self.look == .star {
+        let node = try self.factor()
+        switch self.look {
+        case .plus:
             try self.match(tag: .star)
-            node = Star(node)
-        } else if self.look == .plus {
+            return Star(node)
+        case .star:
             // plus -> factor factor `*`
             try self.match(tag: .plus)
-            node = Concat(node, Star(node))
-        } else if self.look == .question {
+            return Concat(node, Star(node))
+        case .question:
             // question -> factor | ``
             try self.match(tag: .question)
-            node = Union([node, Optional<Character>.none])
+            return Union([node, Optional<Character>.none])
+        default:
+            return node
         }
-        return node
     }
     
     /// 規則D: `ab`, `a*bc`, `(ab)*cd`
