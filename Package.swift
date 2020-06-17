@@ -4,19 +4,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "Regular Expression",
+    name: "regular-expression",
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.1.0"),
     ],
     targets: [
         .target(
-            name: "Regular Expression",
+            name: "RegularExpression",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .testTarget(
-            name: "Regular ExpressionTests",
-            dependencies: ["Regular Expression"]),
+            name: "RegularExpressionTests",
+            dependencies: ["RegularExpression"]),
     ]
 )

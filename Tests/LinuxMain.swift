@@ -1,6 +1,6 @@
 import XCTest
 
-import Regular_ExpressionTests
+import RegularExpressionTests
 
 var tests = [XCTestCaseEntry]()
 tests += Regular_ExpressionTests.allTests()

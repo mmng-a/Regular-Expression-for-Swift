@@ -1,6 +1,6 @@
 import XCTest
 import ArgumentParser
-@testable import Regular_Expression
+@testable import RegularExpression
 
 extension Regex {
     /// For Test. This function is heavy.
@@ -33,5 +33,9 @@ final class Regular_ExpressionTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
+    
+    static var allTests = [
+        ("test_simpleStar", test_simpleStar)
+    ]
 
 }

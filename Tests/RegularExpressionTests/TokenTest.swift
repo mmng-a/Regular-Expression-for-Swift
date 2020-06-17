@@ -1,13 +1,6 @@
-//
-//  TokenTest.swift
-//  Regular Expression Test
-//
-//  Created by Masashi Aso on 2020/06/17.
-//  Copyright © 2020 Masashi Aso. All rights reserved.
-//
 
 import XCTest
-@testable import Regular_Expression
+@testable import RegularExpression
 
 class TokenTest: XCTestCase {
     func test_isSameKind() {
