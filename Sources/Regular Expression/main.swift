@@ -1,10 +1,3 @@
-//
-//  main.swift
-//  Regular Expression
-//
-//  Created by Masashi Aso on 2020/03/04.
-//  Copyright © 2020 Masashi Aso. All rights reserved.
-//
 
 import ArgumentParser
 
@@ -42,14 +35,6 @@ extension Regex {
                 printMatch(text: string)
             }
         }
-    }
-    
-    /// For Test. This function is heavy.
-    /// - Parameter text: The text
-    func callAsFunction(_ text: String) -> Bool? {
-        guard let DFA = try? createDFA() else { return nil }
-        var runtime = DFA.getRuntime()
-        return runtime.accept(input: text)
     }
     
     func createDFA() throws -> DeterministicFiniteAutomaton {

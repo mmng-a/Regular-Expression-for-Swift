@@ -1,30 +1,30 @@
-//
-//  Regular_Expression_Test.swift
-//  Regular Expression Test
-//
-//  Created by Masashi Aso on 2020/03/05.
-//  Copyright © 2020 Masashi Aso. All rights reserved.
-//
-
 import XCTest
+import ArgumentParser
 @testable import Regular_Expression
 
-class Regular_Expression_Test: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+extension Regex {
+    /// For Test. This function is heavy.
+    /// - Parameter text: The text
+    func callAsFunction(_ text: String) throws -> Bool {
+        let DFA = try createDFA()
+        var runtime = DFA.getRuntime()
+        return runtime.accept(input: text)
     }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() {
-        let regex = Regex(
-            pattern: .init { _ in "[abc]?" },
-            text:    .init { _ in nil }
+    
+    init(_ pattern: String) {
+        self.init(
+            pattern: Argument<String>(default: pattern, help: ""),
+            text:    Argument<String?>(help: ""),
+            matchHeadAndTail: Flag<Bool>()
         )
-        XCTAssertTrue(regex.callAsFunction("a")!)
+    }
+}
+
+final class Regular_ExpressionTests: XCTestCase {
+
+    func test_simpleStar() throws {
+        let regex = Regex("[abc]?")
+        XCTAssertTrue(try! regex("a"))
     }
 
     func testPerformanceExample() {
