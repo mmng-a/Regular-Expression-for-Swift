@@ -14,7 +14,7 @@ struct Parser {
             switch tag {
             case .character, .union, .star, .plus, .question,
                  .lParen, .lSquareBracket, .hyphen, .lCurlyBracket, .EOF:
-                throw ParseError.syntax
+                throw ParseError.other
             case .rParen:         throw ParseError.missing(.paren)
             case .rSquareBracket: throw ParseError.missing(.square)
             case .rCurlyBracket:  throw ParseError.missing(.curly)
@@ -30,10 +30,9 @@ struct Parser {
 
 extension Parser {
     enum ParseError: Error, CustomStringConvertible {
-        case syntax
         case missing(BracketType)
         case number
-        case other(String)
+        case other
         
         enum BracketType {
             case curly, square, paren
@@ -48,10 +47,9 @@ extension Parser {
         
         var description: String {
             switch self {
-            case .syntax:         return "Syntax Error"
             case .missing(let b): return "Missing `\(b.character)`"
-            case .number:         return "Expect number in `{}`"
-            case .other(let s):   return s
+            case .number: return "{} must be {count} or {start,end}"
+            case .other:  return "Syntax Error"
             }
         }
     }
@@ -88,9 +86,10 @@ extension Parser {
                 if case let .character(start) = node,
                     let node2 = try? factor(),
                     self.looking == .rSquareBracket,
-                    case let .character(end) = node2 {
-                        let characters = [Character](from: start, to: end)
-                        nodes.append(contentsOf: characters.map { Node.character($0) })
+                    case let .character(end) = node2
+                {
+                    let characters = [Character](from: start, to: end)
+                    nodes.append(contentsOf: characters.map(Node.character))
                 } else {
                     nodes.append(node)
                     nodes.append(.character(Token.hyphen.character!))
@@ -103,7 +102,7 @@ extension Parser {
             try self.matchKind(of: .hyphen)
             return .character(Token.hyphen.character!)
         default:    // CHARACTER
-            guard case .character(let char) = self.looking else { throw ParseError.syntax }
+            guard case .character(let char) = self.looking else { throw ParseError.other }
             try self.matchKind(of: .character(" "))
             return .character(char)
         }
@@ -132,20 +131,18 @@ extension Parser {
             try self.matchKind(of: .lCurlyBracket)
             let string = try self.sequence().string
             try self.matchKind(of: .rCurlyBracket)
-            let strings = string.filter { $0 != " " }.split(separator: ",")
+            let numbers = try string.filter { $0 != " " }.split(separator: ",")
+                .map { try UInt(String($0)) !! ParseError.number }
             
-            switch strings.count {
+            switch numbers.count {
             case 1:     // {3}
-                guard let count = UInt(strings[0]) else { throw ParseError.number }
-                return Node.repeat(node, ClosedRange(at: count))
+                return Node.repeat(node, ClosedRange(at: numbers[0]))
             case 2:     // {1, 3}
-                guard let start = UInt(strings[0]), let end = UInt(strings[1])
-                    else { throw ParseError.number }
-                guard 0 <= start, start <= end
-                    else { throw ParseError.other("{a,b} must be `0 <= a <= b`") }
+                let start = numbers[0], end = numbers[1]
+                guard start <= end else { throw ParseError.number}
                 return Node.repeat(node, start...end)
             default:
-                throw ParseError.other("{} must be {count} or {start,end}")
+                throw ParseError.number
             }
         default:
             return node

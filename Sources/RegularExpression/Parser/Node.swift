@@ -22,7 +22,7 @@ extension Node {
             flag.accepts = [s2]
             return flag
             
-        case .repeat(let node, nil):        // star
+        case .repeat(let node, nil):
             let originalFlag = node.assemble(&context)
             var flag = originalFlag.createSkelton()
             
@@ -36,16 +36,10 @@ extension Node {
             flag.accepts = originalFlag.accepts.union([state])
             return flag
             
-        // TODO: 高速化
         case .repeat(let node, let .some(range)):
-            let unionNode = Node.union([node, .null])
-            let lowerNodes = Array(repeating: node, count: Int(range.lowerBound))
-            let upperNodes = Array(repeating: unionNode, count: range.count - 1)
-            
-            return assembleConcat(
-                nodes: lowerNodes + upperNodes,
-                context: &context
-            )
+            let mustNodes   = Array(repeating: node, count: Int(range.lowerBound))
+            let optionNodes = Array(repeating: Node.union([node, .null]), count: range.count - 1)
+            return assembleConcat(nodes: mustNodes + optionNodes, context: &context)
             
         case .concat(let nodes):
             return assembleConcat(nodes: nodes, context: &context)
@@ -101,10 +95,10 @@ extension Node {
     
     var string: String {
         switch self {
-        case .null:                return ""
-        case .character(let char): return "\(char)"
-        case .concat(let nodes):   return nodes.map(\.string).joined()
-        case .union (let nodes):   return nodes.map(\.string).joined(separator: "|")
+        case .null:                  return ""
+        case .character(let char):   return "\(char)"
+        case .concat(let nodes):     return nodes.map(\.string).joined()
+        case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
         case .repeat(let node, nil): return node.string + "*"
         case .repeat(let node, let .some(range)) where range.count == 1:
             return node.string + "{\(range.lowerBound)}"
@@ -123,26 +117,15 @@ extension Node {
     static func plus(_ node: Node) -> Node {
         Node.concat([node, .star(node)])
     }
-    
 }
 
 extension Node: CustomStringConvertible {
     var description: String {
         switch self {
-        case .null:
-            return "Node.null"
-        case .character(let c):
-            return c.description
-        case .concat(let nodes):
-            let nodesDescription = nodes
-                .map(\.description)
-                .joined(separator: ", ")
-            return "Node.concat([\(nodesDescription)])"
-        case .union(let nodes):
-            let nodesDescription = nodes
-                .map(\.description)
-                .joined(separator: ", ")
-            return "Node.union([\(nodesDescription)])"
+        case .null:              return "Node.null"
+        case .character(let c):  return c.description
+        case .union(let nodes):  return "Node.union([\(nodes)])"
+        case .concat(let nodes): return "Node.concat([\(nodes)])"
         case .repeat(let node, let range):
             return "Node.repeat(\(node), \(range?.description ?? "nil"))"
         }

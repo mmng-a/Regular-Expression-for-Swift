@@ -19,13 +19,12 @@ extension NondeterministicFiniteAutomaton {
         var done: Set<Int> = []
         
         while !queue.isEmpty {
-//            print("expanding from \(set)... \(queue)\(done)")
             let stat = queue.popFirst()!
             let nexts = self.transition(stat, nil)
             done.insert(stat)
             
-            for nextStat in nexts where !done.contains(nextStat) {
-                queue.insert(nextStat)
+            for nextState in nexts where !done.contains(nextState) {
+                queue.insert(nextState)
             }
         }
         
