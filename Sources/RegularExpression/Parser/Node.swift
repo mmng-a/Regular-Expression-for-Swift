@@ -24,7 +24,7 @@ extension Node {
             
         case .repeat(let node, nil):        // star
             let originalFlag = node.assemble(&context)
-            var flag = originalFlag.newSkelton()
+            var flag = originalFlag.createSkelton()
             
             for state in originalFlag.accepts {
                 flag.connect(from: state, to: originalFlag.start, with: nil)
@@ -101,10 +101,10 @@ extension Node {
     
     var string: String {
         switch self {
-        case .null:                  return ""
-        case .character(let char):   return "\(char)"
-        case .concat(let nodes):     return nodes.map(\.string).joined()
-        case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
+        case .null:                return ""
+        case .character(let char): return "\(char)"
+        case .concat(let nodes):   return nodes.map(\.string).joined()
+        case .union (let nodes):   return nodes.map(\.string).joined(separator: "|")
         case .repeat(let node, nil): return node.string + "*"
         case .repeat(let node, let .some(range)) where range.count == 1:
             return node.string + "{\(range.lowerBound)}"

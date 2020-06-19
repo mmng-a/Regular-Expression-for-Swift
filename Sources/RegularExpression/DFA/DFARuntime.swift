@@ -45,7 +45,7 @@ extension DeterministicFiniteAutomaton.Runtime {
             if head && input == text { return isAcceptState }
             if isAcceptState && !head { return true }
             currentState = DFA.start
-            text = String(text.dropFirst())
+            text.removeFirst()
         }
         return isAcceptState
     }

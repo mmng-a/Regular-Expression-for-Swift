@@ -1,4 +1,3 @@
-
 import ArgumentParser
 
 struct Regex: ParsableCommand {
@@ -38,14 +37,9 @@ extension Regex {
     }
     
     func createDFA() throws -> DeterministicFiniteAutomaton {
-        // 前方一致、完全一致、後方一致を振り分ける
+        typealias DFACondition = DeterministicFiniteAutomaton.Condition
         var pattern = self.pattern
-        let condition: DeterministicFiniteAutomaton.Condition
-        if matchHeadAndTail {
-            condition =  getCondition(pattern: &pattern)
-        } else {
-            condition = .all
-        }
+        let condition = matchHeadAndTail ? DFACondition(from: &pattern) : .all
         
         let lexer = Lexer(text: pattern)
         var parser = Parser(lexer: lexer)
@@ -54,24 +48,6 @@ extension Regex {
         DFA.condition = condition
         return DFA
     }
-    
-    func getCondition(pattern: inout String) -> DeterministicFiniteAutomaton.Condition {
-        switch (pattern.first, pattern.last) {
-        case ("^", "$"):
-            pattern.removeFirst()
-            pattern.removeLast()
-            return .all
-        case ("^",  _ ):
-            pattern.removeFirst()
-            return .head
-        case ( _ , "$"):
-            pattern.removeLast()
-            return .tail
-        default:
-            return .part
-        }
-    }
 }
 
 Regex.main()
-

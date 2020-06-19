@@ -13,10 +13,13 @@ let package = Package(
             name: "RegularExpression",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
-        ),
+            ]),
+        
         .testTarget(
             name: "RegularExpressionTests",
-            dependencies: ["RegularExpression"]),
+            dependencies: [
+                .target(name: "RegularExpression"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]),
     ]
 )

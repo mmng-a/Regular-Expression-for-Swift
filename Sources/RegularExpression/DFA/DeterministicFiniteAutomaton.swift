@@ -37,5 +37,23 @@ extension DeterministicFiniteAutomaton {
             accepts: NFA.epsilonExpand(set: NFA.accepts)
         )
     }
-    
+}
+
+extension DeterministicFiniteAutomaton.Condition {
+    init(from pattern: inout String) {
+        switch (pattern.first, pattern.last) {
+        case ("^", "$"):
+            pattern.removeFirst()
+            pattern.removeLast()
+            self = .all
+        case ("^",  _ ):
+            pattern.removeFirst()
+            self = .head
+        case ( _ , "$"):
+            pattern.removeLast()
+            self = .tail
+        default:
+            self = .part
+        }
+    }
 }
