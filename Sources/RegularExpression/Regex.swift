@@ -1,5 +1,6 @@
 import ArgumentParser
 
+@main
 struct Regex: ParsableCommand {
     
     static var configuration = CommandConfiguration(
@@ -49,5 +50,3 @@ extension Regex {
         return DFA
     }
 }
-
-Regex.main()
