@@ -24,7 +24,7 @@ extension DeterministicFiniteAutomaton {
         
         func transition(set: Set<Int>, alpha: Character) -> Set<Int> {
             let ret: Set<Int> = set.map { element in
-                NFA.transition(element, alpha)
+                NFA.transition(element, .character(alpha))
             }.reduce(into: Set<Int>()) { result, set in
                 result.formUnion(set)
             }

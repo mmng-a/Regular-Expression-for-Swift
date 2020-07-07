@@ -15,17 +15,17 @@ extension NFAFlag {
     // TODO: Tupleのauto conformanceでいらなくなる。
     struct Input: Hashable, CustomStringConvertible {
         var state: Int
-        var character: Character?
-        init(_ state: Int, _ character: Character?) {
+        var character: Char
+        init(_ state: Int, _ character: Char) {
             self.state = state
             self.character = character
         }
         var description: String {
-            "NFAFlag.Input(start: \(state), character: \(character?.description ?? "nil"))"
+            "NFAFlag.Input(start: \(state), character: \(character.description))"
         }
     }
     
-    mutating func connect(from s1: Int, to s2: Int, with char: Character?) {
+    mutating func connect(from s1: Int, to s2: Int, with char: Char) {
         self.dic[Input(s1, char), default: Set()].insert(s2)
     }
     
@@ -43,7 +43,7 @@ extension NFAFlag {
     
     func build() -> NondeterministicFiniteAutomaton {
         
-        func transition(state: Int, character: Character?) -> Set<Int> {
+        func transition(state: Int, character: Char) -> Set<Int> {
             let input = Input(state, character)
             return dic[input, default: []]
         }

@@ -17,7 +17,7 @@ extension Node {
         case .character(let char):
             var flag = NFAFlag()
             let (s1, s2) = (context.nextState(), context.nextState())
-            flag.connect(from: s1, to: s2, with: char)
+            flag.connect(from: s1, to: s2, with: .character(char))
             flag.start = s1
             flag.accepts = [s2]
             return flag
@@ -27,10 +27,10 @@ extension Node {
             var flag = originalFlag.createSkelton()
             
             for state in originalFlag.accepts {
-                flag.connect(from: state, to: originalFlag.start, with: nil)
+                flag.connect(from: state, to: originalFlag.start, with: .null)
             }
             let state = context.nextState()
-            flag.connect(from: state, to: originalFlag.start, with: nil)
+            flag.connect(from: state, to: originalFlag.start, with: .null)
             
             flag.start = state
             flag.accepts = originalFlag.accepts.union([state])
@@ -52,7 +52,7 @@ extension Node {
     fileprivate func assembleNull(_ context: inout Context) -> NFAFlag {
         var flag = NFAFlag()
         let (s1, s2) = (context.nextState(), context.nextState())
-        flag.connect(from: s1, to: s2, with: nil)
+        flag.connect(from: s1, to: s2, with: .null)
         flag.start = s1
         flag.accepts = [s2]
         return flag
@@ -67,7 +67,7 @@ extension Node {
         if flags.count >= 2 {
             for (first, second) in zip(flags[..<flags.endIndex], flags[1...]) {
                 for state in first.accepts {
-                    flag.connect(from: state, to: second.start, with: nil)
+                    flag.connect(from: state, to: second.start, with: .null)
                 }
             }
         }
@@ -85,7 +85,7 @@ extension Node {
         
         let state = context.nextState()
         for otherFlag in flags {
-            flag.connect(from: state, to: otherFlag.start, with: nil)
+            flag.connect(from: state, to: otherFlag.start, with: .null)
         }
         
         flag.start = state
