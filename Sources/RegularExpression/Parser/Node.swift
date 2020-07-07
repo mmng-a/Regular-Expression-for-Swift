@@ -117,6 +117,10 @@ extension Node {
     static func plus(_ node: Node) -> Node {
         Node.concat([node, .star(node)])
     }
+    
+    static func question(_ node: Node) -> Node {
+        Node.union([node, .null])
+    }
 }
 
 extension Node: CustomStringConvertible {

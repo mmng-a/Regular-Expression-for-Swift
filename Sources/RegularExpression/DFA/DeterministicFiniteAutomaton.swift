@@ -52,7 +52,7 @@ extension DeterministicFiniteAutomaton.Condition {
         case ( _ , "$"):
             pattern.removeLast()
             self = .tail
-        default:
+        case ( _ ,  _ ):
             self = .part
         }
     }

@@ -83,11 +83,8 @@ extension Parser {
                 }
                 // [a-z]などの場合
                 try self.matchKind(of: .hyphen)
-                if case let .character(start) = node,
-                    let node2 = try? factor(),
-                    self.looking == .rSquareBracket,
-                    case let .character(end) = node2
-                {
+                if case .character(let start) = node,
+                   case .character(let end) = self.looking {
                     let characters = [Character](from: start, to: end)
                     nodes.append(contentsOf: characters.map(Node.character))
                 } else {
@@ -126,7 +123,7 @@ extension Parser {
         case .question:
             // question -> factor | ``
             try self.matchKind(of: .question)
-            return Node.union([node, .null])
+            return Node.question(node)
         case .lCurlyBracket:
             try self.matchKind(of: .lCurlyBracket)
             let string = try self.sequence().string
@@ -139,7 +136,7 @@ extension Parser {
                 return Node.repeat(node, ClosedRange(at: numbers[0]))
             case 2:     // {1, 3}
                 let start = numbers[0], end = numbers[1]
-                guard start <= end else { throw ParseError.number}
+                guard start <= end else { throw ParseError.number }
                 return Node.repeat(node, start...end)
             default:
                 throw ParseError.number

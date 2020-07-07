@@ -18,7 +18,7 @@ struct Regex: ParsableCommand {
 extension Regex {
     
     func run() throws {
-        var DFA = try createDFA()
+        let DFA = try createDFA()
         
         func printMatch(text: String) {
             var runtime = DFA.getRuntime()
