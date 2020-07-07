@@ -11,8 +11,8 @@ struct Regex: ParsableCommand {
     @Argument(help: "If you enter the text, you can just see the result. Or you can try regex many times.")
     var text: String?
     
-    @Flag(help: "match '^' and '$'.")
-    var matchHeadAndTail: Bool
+    @Flag(help: "Match '^' and '$'.")
+    var matchHeadAndTail = false
 }
 
 extension Regex {
