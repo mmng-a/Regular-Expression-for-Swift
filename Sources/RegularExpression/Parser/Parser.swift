@@ -12,7 +12,7 @@ struct Parser {
     mutating func matchKind(of tag: Token) throws {
         guard tag.isSameKind(of: self.looking) else {
             switch tag {
-            case .character, .union, .star, .plus, .question,
+            case .character, .dot, .union, .star, .plus, .question,
                  .lParen, .lSquareBracket, .hyphen, .lCurlyBracket, .EOF:
                 throw ParseError.other
             case .rParen:         throw ParseError.missing(.paren)
@@ -83,7 +83,7 @@ extension Parser {
                 }
                 // [a-z]などの場合
                 try self.matchKind(of: .hyphen)
-                if case .character(let start) = node,
+                if case .character(.character(let start)) = node,
                    case .character(let end) = self.looking {
                     let characters = [Character](from: start, to: end)
                     nodes.append(contentsOf: characters.map(Node.character))
@@ -95,6 +95,9 @@ extension Parser {
             try self.matchKind(of: .rSquareBracket)
             
             return Node.union(nodes)
+        case .dot:
+            try self.matchKind(of: .dot)
+            return .any
         case .hyphen:
             try self.matchKind(of: .hyphen)
             return .character(Token.hyphen.character!)
@@ -152,7 +155,7 @@ extension Parser {
     ///
     /// `sequence -> subSequence | null`
     mutating func sequence() throws -> Node {
-        let tokens: [Token] = [.lParen, .character(" "), .lSquareBracket, .lCurlyBracket, .hyphen]
+        let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket, .lCurlyBracket, .hyphen]
         if tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
             return try self.subSequence()
         } else {
@@ -167,7 +170,7 @@ extension Parser {
     /// `subSequence -> star (subSequence | star)`
     mutating func subSequence() throws -> Node {
         let node = try self.star()
-        let tokens: [Token] = [.lParen, .character(" "), .lSquareBracket, .lCurlyBracket, .hyphen]
+        let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket, .lCurlyBracket, .hyphen]
         if tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
             let node2 = try self.subSequence()
             return Node.concat([node, node2])

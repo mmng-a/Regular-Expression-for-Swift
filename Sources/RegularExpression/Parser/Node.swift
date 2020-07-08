@@ -1,7 +1,8 @@
 
 enum Node {
     case null
-    case character(Character)
+    case any
+    case character(Char)
     indirect case `repeat`(Node, Optional<ClosedRange<UInt>>)
     case concat([Node])
     case union([Node])
@@ -12,15 +13,13 @@ extension Node {
     func assemble(_ context: inout Context) -> NFAFlag {
         switch self {
         case .null:
-            return assembleNull(&context)
+            return assembleChar(.null, context: &context)
+            
+        case .any:
+            return assembleChar(.any, context: &context)
             
         case .character(let char):
-            var flag = NFAFlag()
-            let (s1, s2) = (context.nextState(), context.nextState())
-            flag.connect(from: s1, to: s2, with: .character(char))
-            flag.start = s1
-            flag.accepts = [s2]
-            return flag
+            return assembleChar(char, context: &context)
             
         case .repeat(let node, nil):
             let originalFlag = node.assemble(&context)
@@ -49,10 +48,10 @@ extension Node {
         }
     }
     
-    fileprivate func assembleNull(_ context: inout Context) -> NFAFlag {
+    fileprivate func assembleChar(_ char: Char, context: inout Context) -> NFAFlag {
         var flag = NFAFlag()
         let (s1, s2) = (context.nextState(), context.nextState())
-        flag.connect(from: s1, to: s2, with: .null)
+        flag.connect(from: s1, to: s2, with: char)
         flag.start = s1
         flag.accepts = [s2]
         return flag
@@ -96,6 +95,7 @@ extension Node {
     var string: String {
         switch self {
         case .null:                  return ""
+        case .any:                   return "."
         case .character(let char):   return "\(char)"
         case .concat(let nodes):     return nodes.map(\.string).joined()
         case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
@@ -121,12 +121,17 @@ extension Node {
     static func question(_ node: Node) -> Node {
         Node.union([node, .null])
     }
+    
+    static func character(_ character: Character) -> Node {
+        Node.character(.character(character))
+    }
 }
 
 extension Node: CustomStringConvertible {
     var description: String {
         switch self {
         case .null:              return "Node.null"
+        case .any:               return "Node.any"
         case .character(let c):  return c.description
         case .union(let nodes):  return "Node.union([\(nodes)])"
         case .concat(let nodes): return "Node.concat([\(nodes)])"

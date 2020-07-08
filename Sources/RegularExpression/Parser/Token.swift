@@ -1,6 +1,7 @@
 
 enum Token {
     case character(_ character: Character)
+    case dot
     case union, star, plus, question
     case lParen, rParen
     case lSquareBracket, rSquareBracket, hyphen
@@ -10,6 +11,7 @@ enum Token {
     var character: Character? {
         switch self {
         case .character(let c): return c
+        case .dot:              return "."
         case .union:            return "|"
         case .star:             return "*"
         case .plus:             return "+"

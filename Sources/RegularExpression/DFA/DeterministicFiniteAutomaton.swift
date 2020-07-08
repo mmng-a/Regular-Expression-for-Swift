@@ -23,11 +23,13 @@ extension DeterministicFiniteAutomaton {
     init(from NFA: NondeterministicFiniteAutomaton) {
         
         func transition(set: Set<Int>, alpha: Character) -> Set<Int> {
-            let ret: Set<Int> = set.map { element in
-                NFA.transition(element, .character(alpha))
-            }.reduce(into: Set<Int>()) { result, set in
-                result.formUnion(set)
-            }
+            let ret: Set<Int> = set
+                .map { element in
+                    NFA.transition(element, .character(alpha))
+                }
+                .reduce(into: Set<Int>()) { result, set in
+                    result.formUnion(set)
+                }
             return NFA.epsilonExpand(set: ret)
         }
         

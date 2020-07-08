@@ -29,18 +29,19 @@ struct Lexer {
             default:
                 return Token.character(first)
             }
-        case "*":  return Token.star
-        case "+":  return Token.plus
-        case "|":  return Token.union
-        case "?":  return Token.question
-        case "(":  return Token.lParen
-        case ")":  return Token.rParen
-        case "[":  return Token.lSquareBracket
-        case "]":  return Token.rSquareBracket
-        case "-":  return Token.hyphen
-        case "{":  return Token.lCurlyBracket
-        case "}":  return Token.rCurlyBracket
-        default:   return Token.character(c)
+        case ".": return Token.dot
+        case "*": return Token.star
+        case "+": return Token.plus
+        case "|": return Token.union
+        case "?": return Token.question
+        case "(": return Token.lParen
+        case ")": return Token.rParen
+        case "[": return Token.lSquareBracket
+        case "]": return Token.rSquareBracket
+        case "-": return Token.hyphen
+        case "{": return Token.lCurlyBracket
+        case "}": return Token.rCurlyBracket
+        default:  return Token.character(c)
         }
     }
 }

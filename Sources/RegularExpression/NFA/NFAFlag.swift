@@ -5,28 +5,15 @@ extension NondeterministicFiniteAutomaton {
     struct Flag {
         var start: Int!
         var accepts: Set<Int> = []
-        var dic: [Input: Set<Int>] = [:]
+        var dic: [Int: [Char: Set<Int>]] = [:]
     }
 }
 
 
 extension NFAFlag {
     
-    // TODO: Tupleのauto conformanceでいらなくなる。
-    struct Input: Hashable, CustomStringConvertible {
-        var state: Int
-        var character: Char
-        init(_ state: Int, _ character: Char) {
-            self.state = state
-            self.character = character
-        }
-        var description: String {
-            "NFAFlag.Input(start: \(state), character: \(character.description))"
-        }
-    }
-    
     mutating func connect(from s1: Int, to s2: Int, with char: Char) {
-        self.dic[Input(s1, char), default: Set()].insert(s2)
+        self.dic[s1, default: [:]][char, default: []].insert(s2)
     }
     
     func createSkelton() -> NFAFlag {
@@ -35,8 +22,10 @@ extension NFAFlag {
     
     static func compose(_ x: NFAFlag, _ y: NFAFlag) -> NFAFlag {
         var new = x.createSkelton()
-        for (key, value) in y.dic {
-            new.dic[key] = value
+        new.dic.merge(y.dic) { a, b in
+            a.merging(b) { c, d in
+                c.union(d)
+            }
         }
         return new
     }
@@ -44,8 +33,12 @@ extension NFAFlag {
     func build() -> NondeterministicFiniteAutomaton {
         
         func transition(state: Int, character: Char) -> Set<Int> {
-            let input = Input(state, character)
-            return dic[input, default: []]
+            let dictionary = dic[state, default: [:]]
+            var result = Set<Int>()
+            for (key, value) in dictionary where key.contains(character) {
+                result.formUnion(value)
+            }
+            return result
         }
         
         return .init(transition: transition, start: start, accepts: accepts)

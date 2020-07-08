@@ -18,10 +18,9 @@ extension NondeterministicFiniteAutomaton {
         var queue: Set<Int> = set
         var done: Set<Int> = []
         
-        while !queue.isEmpty {
-            let stat = queue.popFirst()!
-            let nexts = self.transition(stat, .null)
-            done.insert(stat)
+        while let state = queue.popFirst() {
+            let nexts = self.transition(state, .null)
+            done.insert(state)
             
             for nextState in nexts where !done.contains(nextState) {
                 queue.insert(nextState)
