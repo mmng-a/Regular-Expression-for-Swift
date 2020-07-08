@@ -20,6 +20,8 @@ extension NFAFlag {
         NFAFlag(start: nil, accepts: [], dic: self.dic)
     }
     
+    /// return composed flag
+    /// - Note: O(*n^2*) where y.dic.count
     static func compose(_ x: NFAFlag, _ y: NFAFlag) -> NFAFlag {
         var new = x.createSkelton()
         new.dic.merge(y.dic) { a, b in

@@ -39,7 +39,7 @@ extension Node {
         case .repeat(let node, let .some(range)):
             let mustNodes   = repeatElement(node, count: Int(range.lowerBound))
             let optionNodes = repeatElement(Node.union([node, .null]), count: range.count - 1)
-            let joinedNodes = JoinedCollection(mustNodes, optionNodes)
+            let joinedNodes: FlattenCollection = [mustNodes, optionNodes].joined()
             return assembleConcat(nodes: joinedNodes, context: &context)
             
         case .concat(let nodes):
@@ -62,6 +62,7 @@ extension Node {
         return flag
     }
     
+    /// - Note: O(*n*) where n is nodes.count
     fileprivate func assembleConcat<C>(nodes: C, context: inout Context) -> NFAFlag
         where C: Collection, C.Element == Node
     {

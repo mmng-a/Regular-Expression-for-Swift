@@ -12,9 +12,9 @@ extension Regex {
     
     init(_ pattern: String) {
         self.init(
-            pattern: Argument<String>(default: pattern, help: ""),
-            text:    Argument<String?>(help: ""),
-            matchHeadAndTail: Flag<Bool>()
+            pattern: .init(wrappedValue: pattern),
+            text:    .init(wrappedValue: nil, help: .init(), transform: {$0}),
+            matchHeadAndTail: false
         )
     }
 }
