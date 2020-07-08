@@ -85,8 +85,7 @@ extension Parser {
                 try self.matchKind(of: .hyphen)
                 if case .character(.character(let start)) = node,
                    case .character(let end) = self.looking {
-                    let characters = [Character](from: start, to: end)
-                    nodes.append(contentsOf: characters.map(Node.character))
+                    nodes.append(.range(start...end))
                 } else {
                     nodes.append(node)
                     nodes.append(.character(Token.hyphen.character!))

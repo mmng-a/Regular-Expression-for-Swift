@@ -6,6 +6,7 @@ enum Node {
     indirect case `repeat`(Node, Optional<ClosedRange<UInt>>)
     case concat([Node])
     case union([Node])
+    case range(ClosedRange<Character>)
 }
 
 extension Node {
@@ -46,6 +47,9 @@ extension Node {
             
         case .union(let nodes):
             return assembleUnion(nodes: nodes, context: &context)
+            
+        case .range(let range):
+            return assembleChar(.range(range), context: &context)
         }
     }
     
@@ -104,6 +108,7 @@ extension Node {
         case .character(let char):   return "\(char)"
         case .concat(let nodes):     return nodes.map(\.string).joined()
         case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
+        case .range (let range):     return range.lowerBound.description + "-" + range.upperBound.description
         case .repeat(let node, nil): return node.string + "*"
         case .repeat(let node, let .some(range)) where range.count == 1:
             return node.string + "{\(range.lowerBound)}"
@@ -139,6 +144,7 @@ extension Node: CustomStringConvertible {
         case .any:               return "Node.any"
         case .character(let c):  return c.description
         case .union(let nodes):  return "Node.union([\(nodes)])"
+        case .range(let range):  return "Node.range(\(range.lowerBound)-\(range.upperBound)"
         case .concat(let nodes): return "Node.concat([\(nodes)])"
         case .repeat(let node, let range):
             return "Node.repeat(\(node), \(range?.description ?? "nil"))"

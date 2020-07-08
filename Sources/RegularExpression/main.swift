@@ -5,7 +5,7 @@ struct Regex: ParsableCommand {
     static var configuration = CommandConfiguration(
         abstract: "Match a pattern against a text or texts.")
     
-    @Argument(help: "You can use a lot of standard syntax of regular expression without `.`.")
+    @Argument(help: "You can use a lot of standard syntax of regular expression.")
     var pattern: String
     
     @Argument(help: "If you enter the text, you can just see the result. Or you can try regex many times.")
