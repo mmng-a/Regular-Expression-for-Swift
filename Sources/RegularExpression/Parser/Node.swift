@@ -36,9 +36,10 @@ extension Node {
             return flag
             
         case .repeat(let node, let .some(range)):
-            let mustNodes   = Array(repeating: node, count: Int(range.lowerBound))
-            let optionNodes = Array(repeating: Node.union([node, .null]), count: range.count - 1)
-            return assembleConcat(nodes: mustNodes + optionNodes, context: &context)
+            let mustNodes   = repeatElement(node, count: Int(range.lowerBound))
+            let optionNodes = repeatElement(Node.union([node, .null]), count: range.count - 1)
+            let joinedNodes = JoinedCollection(mustNodes, optionNodes)
+            return assembleConcat(nodes: joinedNodes, context: &context)
             
         case .concat(let nodes):
             return assembleConcat(nodes: nodes, context: &context)
@@ -57,8 +58,10 @@ extension Node {
         return flag
     }
     
-    fileprivate func assembleConcat(nodes: [Node], context: inout Context) -> NFAFlag {
-        guard !nodes.isEmpty else { return assembleNull(&context) }
+    fileprivate func assembleConcat<C>(nodes: C, context: inout Context) -> NFAFlag
+        where C: Collection, C.Element == Node
+    {
+        guard !nodes.isEmpty else { return assembleChar(.null, context: &context) }
         
         let flags = nodes.map { $0.assemble(&context) }
         var flag = flags[1...].reduce(flags[0], NFAFlag.compose)
@@ -76,8 +79,10 @@ extension Node {
         return flag
     }
     
-    fileprivate func assembleUnion(nodes: [Node], context: inout Context) -> NFAFlag {
-        guard !nodes.isEmpty else { return assembleNull(&context) }
+    fileprivate func assembleUnion<C>(nodes: C, context: inout Context) -> NFAFlag
+        where C: Collection, C.Element == Node
+    {
+        guard !nodes.isEmpty else { return assembleChar(.null, context: &context) }
         
         let flags = nodes.map { $0.assemble(&context) }
         var flag = flags[1...].reduce(flags[0], NFAFlag.compose)
