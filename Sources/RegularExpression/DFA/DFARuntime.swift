@@ -3,12 +3,12 @@ typealias DFARuntime = DeterministicFiniteAutomaton.Runtime
 
 extension DeterministicFiniteAutomaton {
     
-    struct Runtime {
+    public struct Runtime {
         let DFA: DeterministicFiniteAutomaton
         var currentState: Set<Int>
     }
     
-    func getRuntime() -> Runtime {
+    public func getRuntime() -> Runtime {
         Runtime(DFA: self)
     }
 }
@@ -30,7 +30,7 @@ extension DeterministicFiniteAutomaton.Runtime {
         !DFA.accepts.intersection(currentState).isEmpty
     }
     
-    mutating func accept(input: String) -> Bool {
+    public mutating func accept(input: String) -> Bool {
         var text = input
         
         let head = [.all, .head].contains(DFA.condition)

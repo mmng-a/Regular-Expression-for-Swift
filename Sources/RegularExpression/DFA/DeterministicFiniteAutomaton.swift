@@ -1,8 +1,8 @@
 
-struct DeterministicFiniteAutomaton {
-    var transition: (_ state: Set<Int>, _ character: Character) -> Set<Int>
-    var start: Set<Int>
-    var accepts: Set<Int>
+public struct DeterministicFiniteAutomaton {
+    internal var transition: (_ state: Set<Int>, _ character: Character) -> Set<Int>
+    private(set) var start: Set<Int>
+    private(set) var accepts: Set<Int>
     
     init(
         transition: @escaping (_ state: Set<Int>, _ character: Character) -> Set<Int>,
@@ -57,5 +57,19 @@ extension DeterministicFiniteAutomaton.Condition {
         case ( _ ,  _ ):
             self = .part
         }
+    }
+}
+
+extension DeterministicFiniteAutomaton {
+    public static func create(pattern: String, matchesHeadAndTail: Bool = false) throws -> Self {
+        var pattern = pattern
+        let condition = matchesHeadAndTail ? Condition(from: &pattern) : .all
+        
+        let lexer = Lexer(text: pattern)
+        var parser = Parser(lexer: lexer)
+        let NFA = try parser.expression()
+        var DFA = DeterministicFiniteAutomaton(from: NFA)
+        DFA.condition = condition
+        return DFA
     }
 }

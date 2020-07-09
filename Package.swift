@@ -6,23 +6,20 @@ import PackageDescription
 let package = Package(
     name: "regular-expression",
     products: [
-        .executable(name: "regex", targets: ["RegularExpression"])
+        .executable(name: "regex", targets: ["regex"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.2.0"),
     ],
     targets: [
+        .target(name: "RegularExpression"),
         .target(
-            name: "RegularExpression",
+            name: "regex",
             dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]),
-        
+                "RegularExpression",
+                .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .testTarget(
             name: "RegularExpressionTests",
-            dependencies: [
-                .target(name: "RegularExpression"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]),
+            dependencies: ["RegularExpression"]),
     ]
 )

@@ -1,4 +1,5 @@
 import ArgumentParser
+import RegularExpression
 
 struct Regex: ParsableCommand {
     
@@ -18,10 +19,11 @@ struct Regex: ParsableCommand {
 extension Regex {
     
     func run() throws {
-        let DFA = try createDFA()
+        typealias DFA = DeterministicFiniteAutomaton
+        let dfa = try DFA.create(pattern: pattern, matchesHeadAndTail: matchHeadAndTail)
         
         func printMatch(text: String) {
-            var runtime = DFA.getRuntime()
+            var runtime = dfa.getRuntime()
             print(runtime.accept(input: text) ? "-> matched" : "-> not matched")
         }
         
@@ -34,19 +36,6 @@ extension Regex {
                 printMatch(text: string)
             }
         }
-    }
-    
-    func createDFA() throws -> DeterministicFiniteAutomaton {
-        typealias DFACondition = DeterministicFiniteAutomaton.Condition
-        var pattern = self.pattern
-        let condition = matchHeadAndTail ? DFACondition(from: &pattern) : .all
-        
-        let lexer = Lexer(text: pattern)
-        var parser = Parser(lexer: lexer)
-        let NFA = try parser.expression()
-        var DFA = DeterministicFiniteAutomaton(from: NFA)
-        DFA.condition = condition
-        return DFA
     }
 }
 
