@@ -1,22 +1,47 @@
 import XCTest
 @testable import RegularExpression
 
-final class Regular_ExpressionTests: XCTestCase {
+typealias DFA = DeterministicFiniteAutomaton
 
-    func test_simpleStar() throws {
-        let regex = Regex("[abc]?")
-        XCTAssertTrue(try! regex("a"))
+final class RegularExpressionTests: XCTestCase {
+
+    func testStar() throws {
+        let dfa = try DFA.create(pattern: "a*")
+        for input in ["", "a", "aaaaaa"] {
+            var runtime = dfa.getRuntime()
+            XCTAssertTrue(runtime.accept(input: input))
+        }
+        
+        for input in [" ", "aabaaa", "failed"] {
+            var runtime = dfa.getRuntime()
+            XCTAssertFalse(runtime.accept(input: input))
+        }
+    }
+    
+    func testUnion() throws {
+        let dfa = try DFA.create(pattern: "s(wift|mart|uper)")
+        for input in ["swift", "smart", "super"] {
+            var runtime = dfa.getRuntime()
+            XCTAssertTrue(runtime.accept(input: input))
+        }
+        
+        for input in ["", "rust", "Swift", "wift", "failed"] {
+            var runtime = dfa.getRuntime()
+            XCTAssertFalse(runtime.accept(input: input))
+        }
     }
 
     func testPerformanceExample() {
         // This is an example of a performance test case.
         measure {
-            // Put the code you want to measure the time of here.
+            let dfa = try! DFA.create(pattern: "a{1,1000}")
+            _ = dfa.getRuntime()
         }
     }
     
     static var allTests = [
-        ("test_simpleStar", test_simpleStar)
+        ("testStar",  testStar),
+        ("testUnion", testUnion),
     ]
 
 }
