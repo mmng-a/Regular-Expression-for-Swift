@@ -70,29 +70,25 @@ extension Parser {
             let node = try self.subExpression()
             try self.matchKind(of: .rParen)
             return node
-        case .lSquareBracket:
-            // [ CHARACTERs ]
+        case .lSquareBracket: // [ CHARACTER... ]
             try self.matchKind(of: .lSquareBracket)
-            // ココうまい方法ありそう
             var nodes = [Node]()
-            while self.looking != .rSquareBracket {
-                let node = try factor()
-                guard self.looking == .hyphen else {
-                    nodes.append(node)
-                    continue
-                }
-                // [a-z]などの場合
+            
+            while looking != .rSquareBracket {
+                let character = try looking.character !! ParseError.missing(.square)
+                nodes.append(.character(character))
+                self.move()
+                
+                guard case .hyphen = looking else { continue }
                 try self.matchKind(of: .hyphen)
-                if case .character(.character(let start)) = node,
-                   case .character(let end) = self.looking {
-                    nodes.append(.character(.range(start...end)))
+                if let end = looking.character {
+                    nodes.append(.character(.range(character...end)))
                 } else {
-                    nodes.append(node)
                     nodes.append(.character(Token.hyphen.character!))
                 }
             }
-            try self.matchKind(of: .rSquareBracket)
             
+            try self.matchKind(of: .rSquareBracket)
             return Node.union(nodes)
         case .dot:
             try self.matchKind(of: .dot)
@@ -100,10 +96,11 @@ extension Parser {
         case .hyphen:
             try self.matchKind(of: .hyphen)
             return .character(Token.hyphen.character!)
-        default:    // CHARACTER
-            guard case .character(let char) = self.looking else { throw ParseError.other }
+        case .character(let char):
             try self.matchKind(of: .character(" "))
             return .character(char)
+        default:
+            throw ParseError.other
         }
     }
     
@@ -119,11 +116,9 @@ extension Parser {
             try self.matchKind(of: .plus)
             return Node.plus(node)
         case .star:
-            // plus -> factor factor `*`
             try self.matchKind(of: .star)
             return Node.star(node)
         case .question:
-            // question -> factor | ``
             try self.matchKind(of: .question)
             return Node.question(node)
         case .lCurlyBracket:
@@ -168,14 +163,12 @@ extension Parser {
     ///
     /// `subSequence -> star (subSequence | star)`
     mutating func subSequence() throws -> Node {
-        let node = try self.star()
+        var nodes = [try self.star()]
         let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket, .lCurlyBracket, .hyphen]
-        if tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
-            let node2 = try self.subSequence()
-            return Node.concat([node, node2])
-        } else {
-            return node
+        while tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
+            nodes.append(try self.subSequence())
         }
+        return .concat(nodes)
     }
     
     /// 規則B: `a|b`, `a*bc|(ab)*cd|`
@@ -184,13 +177,12 @@ extension Parser {
     ///
     /// `subExpression -> (sequence | subExpression) | sequence`
     mutating func subExpression() throws -> Node {
-        var node = try self.sequence()
-        if self.looking == .union {
+        var nodes = [try self.sequence()]
+        while case .union = looking {
             try self.matchKind(of: .union)
-            let node2 = try self.subExpression()
-            node = .union([node, node2])
+            nodes.append(try self.subExpression())
         }
-        return node
+        return .union(nodes)
     }
     
     /// 規則A: `a*bc|(ab)*cd|` + EOF
