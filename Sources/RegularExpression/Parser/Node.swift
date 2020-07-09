@@ -1,24 +1,15 @@
 
 enum Node {
-    case null
-    case any
     case character(Char)
     indirect case `repeat`(Node, Optional<ClosedRange<UInt>>)
     case concat([Node])
     case union([Node])
-    case range(ClosedRange<Character>)
 }
 
 extension Node {
     
     func assemble(_ context: inout Context) -> NFAFlag {
         switch self {
-        case .null:
-            return assembleChar(.null, context: &context)
-            
-        case .any:
-            return assembleChar(.any, context: &context)
-            
         case .character(let char):
             return assembleChar(char, context: &context)
             
@@ -38,7 +29,7 @@ extension Node {
             
         case .repeat(let node, let .some(range)):
             let mustNodes   = repeatElement(node, count: Int(range.lowerBound))
-            let optionNodes = repeatElement(Node.union([node, .null]), count: range.count - 1)
+            let optionNodes = repeatElement(Node.union([node, .character(.null)]), count: range.count - 1)
             let joinedNodes: FlattenCollection = [mustNodes, optionNodes].joined()
             return assembleConcat(nodes: joinedNodes, context: &context)
             
@@ -47,9 +38,6 @@ extension Node {
             
         case .union(let nodes):
             return assembleUnion(nodes: nodes, context: &context)
-            
-        case .range(let range):
-            return assembleChar(.range(range), context: &context)
         }
     }
     
@@ -104,12 +92,9 @@ extension Node {
     
     var string: String {
         switch self {
-        case .null:                  return ""
-        case .any:                   return "."
         case .character(let char):   return "\(char)"
         case .concat(let nodes):     return nodes.map(\.string).joined()
         case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
-        case .range (let range):     return range.lowerBound.description + "-" + range.upperBound.description
         case .repeat(let node, nil): return node.string + "*"
         case .repeat(let node, let .some(range)) where range.count == 1:
             return node.string + "{\(range.lowerBound)}"
@@ -130,7 +115,7 @@ extension Node {
     }
     
     static func question(_ node: Node) -> Node {
-        Node.union([node, .null])
+        Node.union([node, .character(.null)])
     }
     
     static func character(_ character: Character) -> Node {
@@ -141,11 +126,8 @@ extension Node {
 extension Node: CustomStringConvertible {
     var description: String {
         switch self {
-        case .null:              return "Node.null"
-        case .any:               return "Node.any"
         case .character(let c):  return c.description
         case .union(let nodes):  return "Node.union([\(nodes)])"
-        case .range(let range):  return "Node.range(\(range.lowerBound)-\(range.upperBound)"
         case .concat(let nodes): return "Node.concat([\(nodes)])"
         case .repeat(let node, let range):
             return "Node.repeat(\(node), \(range?.description ?? "nil"))"

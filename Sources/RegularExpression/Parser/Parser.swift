@@ -85,7 +85,7 @@ extension Parser {
                 try self.matchKind(of: .hyphen)
                 if case .character(.character(let start)) = node,
                    case .character(let end) = self.looking {
-                    nodes.append(.range(start...end))
+                    nodes.append(.character(.range(start...end)))
                 } else {
                     nodes.append(node)
                     nodes.append(.character(Token.hyphen.character!))
@@ -96,7 +96,7 @@ extension Parser {
             return Node.union(nodes)
         case .dot:
             try self.matchKind(of: .dot)
-            return .any
+            return .character(.any)
         case .hyphen:
             try self.matchKind(of: .hyphen)
             return .character(Token.hyphen.character!)
@@ -158,7 +158,7 @@ extension Parser {
         if tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
             return try self.subSequence()
         } else {
-            return .null
+            return .character(.null)
         }
     }
     
@@ -200,12 +200,10 @@ extension Parser {
     /// `expression -> subExpression + EOF`
     mutating func expression() throws -> NondeterministicFiniteAutomaton {
         let node = try self.subExpression()
-//        print(node)
         try self.matchKind(of: .EOF)
         
         var context = Context()
         let fragment = node.assemble(&context)
-//        print(fragment)
         return fragment.build()
     }
 }

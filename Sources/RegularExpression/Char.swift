@@ -1,9 +1,9 @@
 
 enum Char: Equatable, Hashable {
-    case character(_ character: Character)
+    case character(Character)
     case null
     case any
-    case range(_ range: ClosedRange<Character>)
+    case range(ClosedRange<Character>)
 }
 
 extension Char {
