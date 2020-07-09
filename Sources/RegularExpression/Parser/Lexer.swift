@@ -23,6 +23,9 @@ struct Lexer {
         let c = text.removeFirst()
         
         switch c {
+        case "[":
+            self.isInUnion = true
+            return .lSquareBracket
         case #"\"#:
             // not supporting `\p{UNICODE PROPERTY NAME}`
             if text.isEmpty { return .EOF }
@@ -35,9 +38,6 @@ struct Lexer {
         case "?": return .question
         case "(": return .lParen
         case ")": return .rParen
-        case "[":
-            self.isInUnion = true
-            return .lSquareBracket
         case "{": return .lCurlyBracket
         case "}": return .rCurlyBracket
         default:  return .character(c)
@@ -48,6 +48,9 @@ struct Lexer {
         let c = text.removeFirst()
         
         switch c {
+        case "]":
+            self.isInUnion = false
+            return .rSquareBracket
         case #"\"#:
             if text.isEmpty { return .EOF }
             let first = text.removeFirst()
@@ -65,9 +68,6 @@ struct Lexer {
                 return .character(first)
             }
         case "-": return .hyphen
-        case "]":
-            self.isInUnion = false
-            return .rSquareBracket
         default:  return .character(c)
         }
     }

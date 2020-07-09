@@ -26,7 +26,7 @@ extension DeterministicFiniteAutomaton.Runtime {
 //        print(currentState)
     }
     
-    var isAcceptState: Bool {
+    public var isAccepted: Bool {
         !DFA.accepts.intersection(currentState).isEmpty
     }
     
@@ -39,13 +39,13 @@ extension DeterministicFiniteAutomaton.Runtime {
         while !text.isEmpty {
             for c in text {
                 transit(character: c)
-                if isAcceptState && !tail { return true }
+                if isAccepted && !tail { return true }
             }
-            if head && input == text { return isAcceptState }
-            if isAcceptState && !head { return true }
+            if head && input == text { return isAccepted }
+            if isAccepted && !head { return true }
             currentState = DFA.start
             text.removeFirst()
         }
-        return isAcceptState
+        return isAccepted
     }
 }
