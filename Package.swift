@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "regular-expression",
+    products: [
+        .executable(name: "regex", targets: ["RegularExpression"])
+    ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.2.0"),
     ],

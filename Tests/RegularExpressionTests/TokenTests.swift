@@ -5,9 +5,8 @@ class TokenTest: XCTestCase {
     func test_isSameKind() {
         let a = Token.plus
         XCTAssertTrue(a.isSameKind(of: a))
-        let b = Token.EOF
-        XCTAssertTrue(b.isSameKind(of: b))
+        let b = Token.character("a")
         let c = Token.character(" ")
-        XCTAssertTrue(c.isSameKind(of: c))
+        XCTAssertTrue(b.isSameKind(of: c))
     }
 }

@@ -1,5 +1,4 @@
 import XCTest
-import ArgumentParser
 @testable import RegularExpression
 
 final class Regular_ExpressionTests: XCTestCase {
