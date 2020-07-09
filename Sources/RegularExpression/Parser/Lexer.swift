@@ -7,41 +7,68 @@ struct Lexer {
         self.text = text
     }
     
+    var isInUnion = false
+    
     mutating func scan() -> Token {
         if text.isEmpty { return Token.EOF }
         
+        if isInUnion {
+            return scanUnion()
+        } else {
+            return _scan()
+        }
+    }
+    
+    private mutating func _scan() -> Token {
         let c = text.removeFirst()
         
         switch c {
         case #"\"#:
             // not supporting `\p{UNICODE PROPERTY NAME}`
+            if text.isEmpty { return .EOF }
+            let first = text.removeFirst()
+            return .character(first)
+        case ".": return .dot
+        case "*": return .star
+        case "+": return .plus
+        case "|": return .union
+        case "?": return .question
+        case "(": return .lParen
+        case ")": return .rParen
+        case "[":
+            self.isInUnion = true
+            return .lSquareBracket
+        case "{": return .lCurlyBracket
+        case "}": return .rCurlyBracket
+        default:  return .character(c)
+        }
+    }
+    
+    private mutating func scanUnion() -> Token {
+        let c = text.removeFirst()
+        
+        switch c {
+        case #"\"#:
+            if text.isEmpty { return .EOF }
             let first = text.removeFirst()
             switch first {
             case "d":
-                text.insert(contentsOf: "0-9]", at: text.startIndex)
-                return Token.lSquareBracket
+                text.insert(contentsOf: "-9", at: text.startIndex)
+                return .character("0")
             case "s":
-                text.insert(contentsOf: "\t\n\r \r\n]", at: text.startIndex)
-                return Token.lSquareBracket
+                text.insert(contentsOf: "\t\n\r ", at: text.startIndex)
+                return .character("\r\n")
             case "w":
-                text.insert(contentsOf: #"a-zA-Z0-9_]"#, at: text.startIndex)
-                return Token.lSquareBracket
+                text.insert(contentsOf: "-zA-Z0-9_", at: text.startIndex)
+                return .character("a")
             default:
-                return Token.character(first)
+                return .character(first)
             }
-        case ".": return Token.dot
-        case "*": return Token.star
-        case "+": return Token.plus
-        case "|": return Token.union
-        case "?": return Token.question
-        case "(": return Token.lParen
-        case ")": return Token.rParen
-        case "[": return Token.lSquareBracket
-        case "]": return Token.rSquareBracket
-        case "-": return Token.hyphen
-        case "{": return Token.lCurlyBracket
-        case "}": return Token.rCurlyBracket
-        default:  return Token.character(c)
+        case "-": return .hyphen
+        case "]":
+            self.isInUnion = false
+            return .rSquareBracket
+        default:  return .character(c)
         }
     }
 }

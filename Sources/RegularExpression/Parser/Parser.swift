@@ -93,9 +93,6 @@ extension Parser {
         case .dot:
             try self.matchKind(of: .dot)
             return .character(.any)
-        case .hyphen:
-            try self.matchKind(of: .hyphen)
-            return .character(Token.hyphen.character!)
         case .character(let char):
             try self.matchKind(of: .character(" "))
             return .character(char)
@@ -149,7 +146,7 @@ extension Parser {
     ///
     /// `sequence -> subSequence | null`
     mutating func sequence() throws -> Node {
-        let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket, .lCurlyBracket, .hyphen]
+        let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket]
         if tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
             return try self.subSequence()
         } else {
@@ -164,7 +161,7 @@ extension Parser {
     /// `subSequence -> star (subSequence | star)`
     mutating func subSequence() throws -> Node {
         var nodes = [try self.star()]
-        let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket, .lCurlyBracket, .hyphen]
+        let tokens: [Token] = [.lParen, .character(" "), .dot, .lSquareBracket]
         while tokens.contains(where: { $0.isSameKind(of: self.looking) }) {
             nodes.append(try self.subSequence())
         }
