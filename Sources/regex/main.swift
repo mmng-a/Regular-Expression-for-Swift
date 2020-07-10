@@ -4,7 +4,10 @@ import RegularExpression
 struct Regex: ParsableCommand {
     
     static var configuration = CommandConfiguration(
-        abstract: "Match a pattern against a text or texts.")
+        abstract: "Match a pattern against a text or texts.",
+        discussion: "This RegEx command is using DFA engine, and pure Swift project.",
+        version: "1.0"
+    )
     
     @Argument(help: "You can use a lot of standard syntax of regular expression.")
     var pattern: String
