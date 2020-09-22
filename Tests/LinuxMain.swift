@@ -3,5 +3,6 @@ import XCTest
 import RegularExpressionTests
 
 var tests = [XCTestCaseEntry]()
-tests += Regular_ExpressionTests.allTests()
+tests += RegularExpressionTests.__allTests()
+
 XCTMain(tests)
