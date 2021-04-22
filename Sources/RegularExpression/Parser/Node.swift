@@ -15,7 +15,7 @@ extension Node {
             
         case .repeat(let node, nil):
             let originalFlag = node.assemble(&context)
-            var flag = originalFlag.createSkelton()
+            var flag = originalFlag.skelton
             
             for state in originalFlag.accepts {
                 flag.connect(from: state, to: originalFlag.start, with: .null)

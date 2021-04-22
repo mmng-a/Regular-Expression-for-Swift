@@ -16,14 +16,14 @@ extension NFAFlag {
         self.dic[s1, default: [:]][char, default: []].insert(s2)
     }
     
-    func createSkelton() -> NFAFlag {
+  var skelton: NFAFlag {
         NFAFlag(start: nil, accepts: [], dic: self.dic)
     }
     
     /// return composed flag
     /// - Note: O(*n^2*) where y.dic.count
     static func compose(_ x: NFAFlag, _ y: NFAFlag) -> NFAFlag {
-        var new = x.createSkelton()
+        var new = x.skelton
         new.dic.merge(y.dic) { a, b in
             a.merging(b) { c, d in
                 c.union(d)
