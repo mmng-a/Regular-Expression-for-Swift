@@ -16,7 +16,7 @@ class LexerTests: XCTestCase {
     for token in tokens1 {
       XCTAssertEqual(lexer.scan(), token)
     }
-    XCTAssertTrue(lexer.isInUnion)
+    XCTAssertTrue(lexer.state == .union)
     
     let tokens2: [Token] = [
       .character("a"),

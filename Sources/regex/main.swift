@@ -23,7 +23,7 @@ extension Regex {
   
   func run() throws {
     typealias DFA = DeterministicFiniteAutomaton
-    let dfa = try DFA.create(pattern: pattern, matchesHeadAndTail: matchHeadAndTail)
+    let dfa = try DFA(pattern: pattern, matchesHeadAndTail: matchHeadAndTail)
     
     func printMatch(text: String) {
       var runtime = dfa.getRuntime()

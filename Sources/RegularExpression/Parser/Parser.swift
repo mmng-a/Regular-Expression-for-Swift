@@ -12,7 +12,7 @@ struct Parser {
   mutating func matchKind(of tag: Token) throws {
     guard tag.isSameKind(of: self.looking) else {
       switch tag {
-      case .character, .dot, .union, .star, .plus, .question,
+      case .character, .dot, .union, .star, .plus, .question, .comma,
            .lParen, .lSquareBracket, .hyphen, .lCurlyBracket, .EOF:
         throw ParseError.other
       case .rParen:         throw ParseError.missing(.paren)
@@ -25,6 +25,12 @@ struct Parser {
   
   mutating func move() {
     self.looking = self.lexer.scan()
+  }
+  
+  mutating func popNext() -> Token {
+    let token = looking!
+    try! matchKind(of: token)
+    return token
   }
 }
 
@@ -119,22 +125,16 @@ extension Parser {
       try self.matchKind(of: .question)
       return Node.question(node)
     case .lCurlyBracket:
-      try self.matchKind(of: .lCurlyBracket)
-      let string = try self.sequence().string
-      try self.matchKind(of: .rCurlyBracket)
-      let numbers = try string.filter { $0 != " " }.split(separator: ",")
-        .map { try UInt(String($0)) !! ParseError.number }
-      
-      switch numbers.count {
-      case 1:     // {3}
-        return Node.repeat(node, ClosedRange(at: numbers[0]))
-      case 2:     // {1, 3}
-        let start = numbers[0], end = numbers[1]
-        guard start <= end else { throw ParseError.number }
-        return Node.repeat(node, start...end)
-      default:
-        throw ParseError.number
+      try matchKind(of: .lCurlyBracket)
+      let num = try popNext().character?.wholeNumberValue !! ParseError.number
+      guard case .comma = looking else {
+        return Node.repeat(node, .at(UInt(num)))
       }
+      
+      try self.matchKind(of: .comma)
+      let num2 = try popNext().character?.wholeNumberValue !! ParseError.number
+      guard num <= num2 else { throw ParseError.number }
+      return Node.repeat(node, UInt(num)...UInt(num2))
     default:
       return node
     }

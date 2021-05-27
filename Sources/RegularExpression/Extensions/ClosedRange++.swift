@@ -1,6 +1,6 @@
 
 extension ClosedRange {
-  init(at point: Bound) {
-    self = point...point
+  static func at(_ point: Bound) -> Self {
+    point...point
   }
 }

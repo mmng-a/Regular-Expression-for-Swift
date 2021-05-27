@@ -61,15 +61,13 @@ extension DeterministicFiniteAutomaton.Condition {
 }
 
 extension DeterministicFiniteAutomaton {
-  public static func create(pattern: String, matchesHeadAndTail: Bool = false) throws -> Self {
+  public init(pattern: String, matchesHeadAndTail: Bool = false) throws {
     var pattern = pattern
-    let condition = matchesHeadAndTail ? Condition(from: &pattern) : .all
+    condition = matchesHeadAndTail ? Condition(from: &pattern) : .all
     
     let lexer = Lexer(text: pattern)
     var parser = Parser(lexer: lexer)
     let NFA = try parser.expression()
-    var DFA = DeterministicFiniteAutomaton(from: NFA)
-    DFA.condition = condition
-    return DFA
+    self = DeterministicFiniteAutomaton(from: NFA)
   }
 }

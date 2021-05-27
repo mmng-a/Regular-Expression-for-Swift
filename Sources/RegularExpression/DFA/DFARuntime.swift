@@ -23,7 +23,7 @@ extension DeterministicFiniteAutomaton.Runtime {
   
   mutating func transit(character: Character) {
     currentState = DFA.transition(currentState, character)
-    //        print(currentState)
+//    print(currentState)
   }
   
   public var isAccepted: Bool {

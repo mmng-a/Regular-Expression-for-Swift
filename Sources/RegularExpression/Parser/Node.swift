@@ -89,19 +89,6 @@ extension Node {
     flag.accepts = Set(flags.flatMap(\.accepts))
     return flag
   }
-  
-  var string: String {
-    switch self {
-    case .character(let char):   return "\(char)"
-    case .concat(let nodes):     return nodes.map(\.string).joined()
-    case .union (let nodes):     return nodes.map(\.string).joined(separator: "|")
-    case .repeat(let node, nil): return node.string + "*"
-    case .repeat(let node, let .some(range)) where range.count == 1:
-      return node.string + "{\(range.lowerBound)}"
-    case .repeat(let node, let .some(range)):
-      return node.string + "{\(range.lowerBound),\(range.upperBound)}"
-    }
-  }
 }
 
 extension Node {

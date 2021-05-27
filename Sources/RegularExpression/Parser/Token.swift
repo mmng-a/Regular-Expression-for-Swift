@@ -5,7 +5,7 @@ enum Token {
   case union, star, plus, question
   case lParen, rParen
   case lSquareBracket, rSquareBracket, hyphen
-  case lCurlyBracket, rCurlyBracket
+  case lCurlyBracket, rCurlyBracket, comma
   case EOF
   
   var character: Character? {
@@ -23,6 +23,7 @@ enum Token {
     case .hyphen:           return "-"
     case .lCurlyBracket:    return "{"
     case .rCurlyBracket:    return "}"
+    case .comma:            return ","
     case .EOF:              return nil
     }
   }
