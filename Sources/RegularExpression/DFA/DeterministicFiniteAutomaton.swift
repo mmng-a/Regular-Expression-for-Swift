@@ -12,9 +12,14 @@ public struct DeterministicFiniteAutomaton {
     (self.transition, self.start, self.accepts) = (transition, start, accepts)
   }
   
-  var condition: Condition = .part
-  enum Condition: String {
-    case part, head, tail, all
+  var condition: Condition = .all
+  struct Condition: OptionSet {
+    let rawValue: Int8
+    static let head = Condition(rawValue: 1<<0)
+    static let tail = Condition(rawValue: 1<<1)
+    
+    static let part: Condition = []
+    static let all:  Condition = [.head, .tail]
   }
 }
 
@@ -63,11 +68,11 @@ extension DeterministicFiniteAutomaton.Condition {
 extension DeterministicFiniteAutomaton {
   public init(pattern: String, matchesHeadAndTail: Bool = false) throws {
     var pattern = pattern
-    condition = matchesHeadAndTail ? Condition(from: &pattern) : .all
     
     let lexer = Lexer(text: pattern)
     var parser = Parser(lexer: lexer)
     let NFA = try parser.expression()
     self = DeterministicFiniteAutomaton(from: NFA)
+    self.condition = matchesHeadAndTail ? Condition(from: &pattern) : .all
   }
 }

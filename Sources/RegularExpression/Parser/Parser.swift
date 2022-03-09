@@ -27,10 +27,18 @@ struct Parser {
     self.looking = self.lexer.scan()
   }
   
-  mutating func popNext() -> Token {
-    let token = looking!
-    try! matchKind(of: token)
-    return token
+  mutating func popNext() -> Token? {
+    defer { self.move() }
+    return looking
+  }
+  
+  mutating func getStringToNextToken() -> String {
+    var str = ""
+    while case .character(let c) = looking {
+      str.append(c)
+      move()
+    }
+    return str
   }
 }
 
@@ -126,15 +134,28 @@ extension Parser {
       return Node.question(node)
     case .lCurlyBracket:
       try matchKind(of: .lCurlyBracket)
-      let num = try popNext().character?.wholeNumberValue !! ParseError.number
-      guard case .comma = looking else {
-        return Node.repeat(node, .at(UInt(num)))
-      }
       
+      if self.looking == .comma { // {,3}
+        try matchKind(of: .comma)
+        let num = try UInt(getStringToNextToken()) !! ParseError.number
+        try matchKind(of: .rCurlyBracket)
+        return Node.repeat(node, 0...num)
+      }
+      let num1 = try UInt(getStringToNextToken()) !! ParseError.number
+      guard looking == .comma else { // {3}
+        try matchKind(of: .rCurlyBracket)
+        return Node.repeat(node, .at(num1))
+      }
       try self.matchKind(of: .comma)
-      let num2 = try popNext().character?.wholeNumberValue !! ParseError.number
-      guard num <= num2 else { throw ParseError.number }
-      return Node.repeat(node, UInt(num)...UInt(num2))
+      if self.looking == .rCurlyBracket { // {3,}
+        try matchKind(of: .rCurlyBracket)
+        return Node.concat([.repeat(node, .at(num1)), .repeat(node, nil)])
+      }
+      // {1,3}
+      let num2 = try UInt(getStringToNextToken()) !! ParseError.number
+      guard num1 <= num2 else { throw ParseError.number }
+      try matchKind(of: .rCurlyBracket)
+      return Node.repeat(node, num1...num2)
     default:
       return node
     }

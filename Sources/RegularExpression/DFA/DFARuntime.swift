@@ -31,21 +31,13 @@ extension DeterministicFiniteAutomaton.Runtime {
   }
   
   public mutating func accept(input: String) -> Bool {
-    var text = input
-    
-    let head = [.all, .head].contains(DFA.condition)
-    let tail = [.all, .tail].contains(DFA.condition)
-    
-    while !text.isEmpty {
-      for c in text {
-        transit(character: c)
-        if isAccepted && !tail { return true }
-      }
-      if head && input == text { return isAccepted }
-      if isAccepted && !head { return true }
-      currentState = DFA.start
-      text.removeFirst()
+    if input.isEmpty { return isAccepted }
+    for c in input {
+      transit(character: c)
+      if isAccepted && !DFA.condition.contains(.tail) { return true }
     }
-    return isAccepted
+    if isAccepted { return true }
+    return DFA.condition.contains(.head) ? false
+      : accept(input: String(input.dropFirst()))
   }
 }
