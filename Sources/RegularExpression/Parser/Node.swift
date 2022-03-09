@@ -52,7 +52,7 @@ extension Node {
   
   /// - Note: O(*n*) where n is nodes.count
   fileprivate func assembleConcat<C>(nodes: C, context: inout Context) -> NFAFlag
-  where C: Collection, C.Element == Node
+    where C: Collection, C.Element == Node
   {
     guard !nodes.isEmpty else { return assembleChar(.null, context: &context) }
     
